@@ -204,7 +204,6 @@ FakesAssemblies/
 .AppleDouble
 .LSOverride
 .xcodeproj
-MoS.xcodeproj/
 
 # Icon must end with two \r
 Icon
@@ -230,7 +229,6 @@ Temporary Items
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -254,11 +252,6 @@ Temporary Items
 *.exe
 *.out
 *.app
-
-# Sub directories
-MoS/MoS/include/
-MoS/include/
-include/
 
 # RC files
 *.rc
