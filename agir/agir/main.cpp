@@ -1,120 +1,104 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdarg.h>
+#include <math.h>
+#define GL_GLEXT_PROTOTYPES
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 
+void display(){
 
-GLenum doubleBuffer;
-GLint thing1, thing2;
+	//  Clear screen and Z-buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// Reset transformations
+	glLoadIdentity();
 
-static void Init(void)
-{
+	// Rotate when user changes rotate_x and rotate_y
+	glRotatef(45, 1.0, 0.0, 0.0);
+	glRotatef(45, 0.0, 1.0, 0.0);
 
-	glClearColor(0.0, 0.0, 0.0, 0.0);
-	glClearAccum(0.0, 0.0, 0.0, 0.0);
+	//Multi-colored side - FRONT
+	glBegin(GL_POLYGON);
 
-	thing1 = glGenLists(1);
-	glNewList(thing1, GL_COMPILE);
-	glColor3f(1.0, 0.0, 0.0);
-	glRectf(-1.0, -1.0, 1.0, 0.0);
-	glEndList();
+	glColor3f(1.0, 0.0, 0.0);     glVertex3f(0.5, -0.5, -0.5);      // P1 is red
+	glColor3f(0.0, 1.0, 0.0);     glVertex3f(0.5, 0.5, -0.5);      // P2 is green
+	glColor3f(0.0, 0.0, 1.0);     glVertex3f(-0.5, 0.5, -0.5);      // P3 is blue
+	glColor3f(1.0, 0.0, 1.0);     glVertex3f(-0.5, -0.5, -0.5);      // P4 is purple
 
-	thing2 = glGenLists(1);
-	glNewList(thing2, GL_COMPILE);
+	// White side - BACK
+	glBegin(GL_POLYGON);
+	glColor3f(1.0, 1.0, 1.0);
+	glVertex3f(0.5, -0.5, 0.5);
+	glVertex3f(0.5, 0.5, 0.5);
+	glVertex3f(-0.5, 0.5, 0.5);
+	glVertex3f(-0.5, -0.5, 0.5);
+	glEnd();
+
+	// Purple side - RIGHT
+	glBegin(GL_POLYGON);
+	glColor3f(1.0, 0.0, 1.0);
+	glVertex3f(0.5, -0.5, -0.5);
+	glVertex3f(0.5, 0.5, -0.5);
+	glVertex3f(0.5, 0.5, 0.5);
+	glVertex3f(0.5, -0.5, 0.5);
+	glEnd();
+
+	// Green side - LEFT
+	glBegin(GL_POLYGON);
 	glColor3f(0.0, 1.0, 0.0);
-	glRectf(0.0, -1.0, 1.0, 1.0);
-	glEndList();
-}
+	glVertex3f(-0.5, -0.5, 0.5);
+	glVertex3f(-0.5, 0.5, 0.5);
+	glVertex3f(-0.5, 0.5, -0.5);
+	glVertex3f(-0.5, -0.5, -0.5);
+	glEnd();
 
-static void Reshape(int width, int height)
-{
+	// Blue side - TOP
+	glBegin(GL_POLYGON);
+	glColor3f(0.0, 0.0, 1.0);
+	glVertex3f(0.5, 0.5, 0.5);
+	glVertex3f(0.5, 0.5, -0.5);
+	glVertex3f(-0.5, 0.5, -0.5);
+	glVertex3f(-0.5, 0.5, 0.5);
+	glEnd();
 
-	glViewport(0, 0, width, height);
+	// Red side - BOTTOM
+	glBegin(GL_POLYGON);
+	glColor3f(1.0, 0.0, 0.0);
+	glVertex3f(0.5, -0.5, -0.5);
+	glVertex3f(0.5, -0.5, 0.5);
+	glVertex3f(-0.5, -0.5, 0.5);
+	glVertex3f(-0.5, -0.5, -0.5);
+	glEnd();
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-}
+	glFlush();
+	glutSwapBuffers();
 
-static void Key(unsigned char key, int x, int y)
-{
-
-	switch (key) {
-	case '1':
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glutPostRedisplay();
-		break;
-	case '2':
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glutPostRedisplay();
-		break;
-	case 27:
-		exit(0);
-	}
-}
-
-static void Draw(void)
-{
-
-	glPushMatrix();
-
-	glScalef(0.8, 0.8, 1.0);
-
-	glClear(GL_COLOR_BUFFER_BIT);
-	glCallList(thing1);
-	glAccum(GL_LOAD, 0.5);
-
-	glClear(GL_COLOR_BUFFER_BIT);
-	glCallList(thing2);
-	glAccum(GL_ACCUM, 0.5);
-
-	glAccum(GL_RETURN, 1.0);
-
-	glPopMatrix();
-
-	if (doubleBuffer) {
-		glutSwapBuffers();
-	}
-	else {
-		glFlush();
-	}
-}
-
-static void Args(int argc, char **argv)
-{
-	GLint i;
-
-	doubleBuffer = GL_FALSE;
-
-	for (i = 1; i < argc; i++) {
-		if (strcmp(argv[i], "-sb") == 0) {
-			doubleBuffer = GL_FALSE;
-		}
-		else if (strcmp(argv[i], "-db") == 0) {
-			doubleBuffer = GL_TRUE;
-		}
-	}
 }
 
 int main(int argc, char **argv)
 {
-	GLenum type;
-
+	//  Initialize GLUT and process user parameters
 	glutInit(&argc, argv);
-	Args(argc, argv);
 
-	type = GLUT_RGB | GLUT_ACCUM;
-	type |= (doubleBuffer) ? GLUT_DOUBLE : GLUT_SINGLE;
-	glutInitDisplayMode(type);
-	glutInitWindowSize(300, 300);
-	glutCreateWindow("Accum Test");
+	//  Request double buffered true color window with Z-buffer
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
-	Init();
+	// Create window
+	glutCreateWindow("Awesome Cube");
 
-	glutReshapeFunc(Reshape);
-	glutKeyboardFunc(Key);
-	glutDisplayFunc(Draw);
+	//  Enable Z-buffer depth test
+	glEnable(GL_DEPTH_TEST);
+
+	// Callback functions
+	glutDisplayFunc(display);
+	//glutSpecialFunc(specialKeys);
+
+	//  Pass control to GLUT for events
 	glutMainLoop();
+
+	//  Return to OS
+	return 0;
 }
