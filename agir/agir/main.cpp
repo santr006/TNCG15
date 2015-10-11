@@ -1,12 +1,19 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <math.h>
+
+#include <iomanip>
+
+#include "Image.h"
+
 #define GL_GLEXT_PROTOTYPES
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
+
+using namespace std;
 
 void display(){
 
@@ -75,13 +82,12 @@ void display(){
 
 	glFlush();
 	glutSwapBuffers();
-
 }
 
 int main(int argc, char **argv)
 {
 	//  Initialize GLUT and process user parameters
-	glutInit(&argc, argv);
+/*	glutInit(&argc, argv);
 
 	//  Request double buffered true color window with Z-buffer
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -97,8 +103,24 @@ int main(int argc, char **argv)
 	//glutSpecialFunc(specialKeys);
 
 	//  Pass control to GLUT for events
-	glutMainLoop();
+	//glutMainLoop();
+
+	*/
+
+	std::cout << "Rendering test" << std::endl;
+	// Image render test
+	Image im(480, 360);
+	Rgb color(1.0f, 0.f, 0.f);
+	im.fillImage(&color);
+
+	//im.fillImage(color);
+	string fileName = "render";
+	im.saveAsPPM(fileName.c_str() );
+
+	// End of rendering
 
 	//  Return to OS
+
+	system("pause");
 	return 0;
 }
