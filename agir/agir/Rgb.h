@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-
 class Rgb
 {
 public:
