@@ -5,6 +5,8 @@
 #include <iomanip>
 
 #include "Image.h"
+#include "Camera.h"
+
 
 #define GL_GLEXT_PROTOTYPES
 #ifdef __APPLE__
@@ -107,20 +109,26 @@ int main(int argc, char **argv)
 
 	*/
 
-	std::cout << "Rendering test" << std::endl;
+	/*std::cout << "Rendering test" << std::endl;
 	// Image render test
 	Image im(480, 360);
 	Rgb color(1.0f, 0.f, 0.f);
 	im.fillImage(&color);
 
+	//Create camera
+	Camera cam();
+
+	//Render image
+	cam.render();
+
 	//im.fillImage(color);
-	string fileName = "render";
+	string fileName = "render.ppm";
 	im.saveAsPPM(fileName.c_str() );
 
 	// End of rendering
 
 	//  Return to OS
 
-	system("pause");
+	system("pause");*/
 	return 0;
 }
