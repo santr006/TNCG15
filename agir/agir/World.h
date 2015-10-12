@@ -9,7 +9,7 @@ class World
 {
 public:
 	// c-tors and d-tors
-	World();
+	World() {};
 	~World();
 
 	// public methods

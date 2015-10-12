@@ -17,6 +17,7 @@
 
 using namespace std;
 
+/*
 void display(){
 
 	//  Clear screen and Z-buffer
@@ -85,6 +86,8 @@ void display(){
 	glFlush();
 	glutSwapBuffers();
 }
+
+*/
 
 int main(int argc, char **argv)
 {

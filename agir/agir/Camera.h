@@ -3,7 +3,6 @@
  * of the scene using ray tracing					  *
  ******************************************************/
 
-
 #pragma once
 #include <glm.hpp>
 #include <vector>
@@ -38,4 +37,3 @@ public:
 	unsigned int heightInPixels; //the number of pixels up to down in the image that will be rendered
 	float iterationStep; //the step taken along a ray when searching for an intersection
 };
-
