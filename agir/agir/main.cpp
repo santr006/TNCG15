@@ -15,6 +15,8 @@
 
 using namespace std;
 
+
+/*
 void display(){
 
 	//  Clear screen and Z-buffer
@@ -84,6 +86,8 @@ void display(){
 	glutSwapBuffers();
 }
 
+*/
+
 int main(int argc, char **argv)
 {
 	//  Initialize GLUT and process user parameters
@@ -110,17 +114,18 @@ int main(int argc, char **argv)
 	std::cout << "Rendering test" << std::endl;
 	// Image render test
 	Image im(480, 360);
-	Rgb color(1.0f, 0.f, 0.f);
+	Rgb color(229 / 225.f, 177 / 255.f, 58 / 255.f);
 	im.fillImage(&color);
 
 	//im.fillImage(color);
 	string fileName = "render";
+	string extension = ".ppm";
+	fileName.append(extension);
 	im.saveAsPPM(fileName.c_str() );
 
 	// End of rendering
 
 	//  Return to OS
-
 	system("pause");
 	return 0;
 }

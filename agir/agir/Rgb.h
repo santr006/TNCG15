@@ -33,6 +33,3 @@ public:
 private:
 	float r, g, b;
 };
-
-
-
