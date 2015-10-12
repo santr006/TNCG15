@@ -11,16 +11,16 @@ public:
 	Object3D();
 	virtual ~Object3D() = 0;	// pure virtual destructor
 
-	virtual bool testRayIntersection(Ray& r) = 0; // pure virtual function
+	virtual bool testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint) = 0; // pure virtual function
 
 	glm::vec3 getPosition(){ return position; }
-	glm::vec3 getRotation(){ return rotation; }
+	glm::vec2 getRotation(){ return rotation; }
 	Rgb* getColor(){ return &color; }
 
 protected:
 
 	glm::vec3 position;
-	glm::vec3 rotation;
+	glm::vec2 rotation; //rotation round x-axis and rotation round y-axis
 
 	Rgb color;  // to be replaced with material?
 				// TODO: BRDF with material properties

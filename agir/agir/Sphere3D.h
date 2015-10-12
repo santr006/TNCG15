@@ -5,10 +5,10 @@ class Sphere3D : public Object3D
 {
 
 public:
-	Sphere3D(glm::vec3 &pos, glm::vec3 &rot, float r, Rgb &col);
+	Sphere3D(glm::vec3 &pos, glm::vec2 &rot, float r, Rgb &col);
 	~Sphere3D();
 
-	bool testRayIntersection(Ray& r);
+	bool testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint);
 
 private:
 	float radius;

@@ -4,6 +4,7 @@
 
 #pragma once
 #include <glm.hpp>
+#include <vector>
 #include "Ray.h"
 #include "Object3D.h"
 
