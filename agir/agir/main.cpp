@@ -129,6 +129,7 @@ int main(int argc, char **argv)
 
 	//  Return to OS
 
-	system("pause");*/
+	*/
+	system("pause");
 	return 0;
 }
