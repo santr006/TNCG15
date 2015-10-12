@@ -9,6 +9,7 @@ Camera::Camera()
 	farPlane = 2;
 	widthInPixels = 1;
 	heightInPixels = 1;
+	iterationStep = 0.1f;
 }
 
 Camera::~Camera(){}
@@ -24,9 +25,21 @@ Rgb Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 	Ray r(pos, dir);
 
 	//did the ray hit anything?
-	//if it did the color will be white, if not the color is still black
-	if (r.rayIntersect())
-		p.setRGB(255);
+
+	//checks if the given ray intersects any object in the scene
+	//check if the ray hits any bounding box
+	for (int i = 0; i < theWorld.BBoxList.size; i++)
+	{
+		glm::vec3 intersectionPoint;
+		//if it did the color will be white, if not the color is still black
+		if (theWorld.BBoxList.at(i)->intersects(r, iterationStep, intersectionPoint))
+		{
+			//check if the ray hits any of the objects inside the bounding box
+			for (int j = 0; i < theWorld.BBoxList.at(i)->objects.at(j)->
+			p.setRGB(255);
+		}
+
+	}
 
 	return p;
 }
@@ -55,8 +68,9 @@ void Camera::render()
 		{
 			//to decide the color for this pixel send a ray from it
 			glm::vec3 rayStart(leftUpperCorner.x + STEP_BETWEEN_PIXELS * j, leftUpperCorner.y - STEP_BETWEEN_PIXELS * i, leftUpperCorner.z);
+			glm::vec3 rayDir = rayStart - position; //the pixel's position - the cameras position
 			//save the colors in the image
-			im.setPixel(j, i, &generateRay(rayStart, lookAtDirection));
+			im.setPixel(j, i, &generateRay(rayStart, rayDir));
 		}
 	}
 

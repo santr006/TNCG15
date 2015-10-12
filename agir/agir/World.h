@@ -3,6 +3,7 @@
 #include <vector>
 #include "Object3D.h"
 #include "Light.h"
+#include "BoundingBox.h"
 
 class World
 {
@@ -14,8 +15,8 @@ public:
 	// public methods
 	void addObject3D(Object3D* o);
 	void addLight(Light* l);
-	
-private:
+
 	std::vector<Object3D*> objectList;
 	std::vector<Light*> lightList;
+	std::vector<BoundingBox*> BBoxList;
 };
