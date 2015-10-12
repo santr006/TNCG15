@@ -1,9 +1,5 @@
 #include "World.h"
 
-World::World()
-{
-}
-
 World::~World()
 {
 	lightList.erase(lightList.begin(), lightList.end());

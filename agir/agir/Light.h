@@ -4,5 +4,7 @@ class Light
 public:
 	Light();
 	~Light();
-};
 
+protected:
+
+};

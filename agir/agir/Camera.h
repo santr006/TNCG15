@@ -3,7 +3,6 @@
  * of the scene using ray tracing					  *
  ******************************************************/
 
-
 #pragma once
 #include <glm.hpp>
 #include <vector>
@@ -12,7 +11,7 @@
 #include "Ray.h"
 
 //the distance between two pixels in world coordinates
-const float STEP_BETWEEN_PIXELS = 0.005;
+const float STEP_BETWEEN_PIXELS = 0.005f;
 
 class Camera
 {
@@ -27,7 +26,6 @@ public:
 	//and returns the color the path of the ray defines
 	Rgb generateRay(glm::vec3 pos, glm::vec3 dir);
 
-	
 	glm::vec3 position; //position of the observer
 	glm::vec3 upDirection; //the direction that is up for the camera, must be normalized
 	glm::vec3 lookAtDirection; //the direction that is forward for the camera, must be normalized
@@ -36,4 +34,3 @@ public:
 	unsigned int widthInPixels; //the number of pixels left to right in the image that will be rendered
 	unsigned int heightInPixels; //the number of pixels up to down in the image that will be rendered
 };
-

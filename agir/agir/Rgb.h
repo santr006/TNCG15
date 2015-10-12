@@ -17,7 +17,8 @@ public:
 	Rgb& operator += (const Rgb &rgb) { r += rgb.r, g += rgb.g, b += rgb.b; return *this; }
 	Rgb& operator += (const float f) { r += f, g += f, b += f; return *this; }					// rgb + float
 	friend float& operator += (float &f, const Rgb rgb){ f += (rgb.r + rgb.g + rgb.b) / 3.f; return f; }
-	friend std::ostream& operator<< (std::ostream &os, const Rgb& rgb){
+	friend std::ostream& operator<< (std::ostream &os, const Rgb& rgb)
+	{
 		os << "R: " << rgb.r << ", G: " << rgb.g << ", B: " << rgb.b;
 	}
 
