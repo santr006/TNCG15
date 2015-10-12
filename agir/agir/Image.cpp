@@ -4,15 +4,16 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
+#include <ctime>
 
-void Image::setPixel(unsigned int &x, unsigned int &y, Rgb *color)
+void Image::setPixel(unsigned int &x, unsigned int &y, glm::vec3 &color)
 {
-	pixelValues[(x + y*width) * 3] = color->getR();
-	pixelValues[(x + y*width) * 3 + 1] = color->getG();
-	pixelValues[(x + y*width) * 3 + 2] = color->getB();
+	pixelValues[(x + y*width) * 3] = color.r;
+	pixelValues[(x + y*width) * 3 + 1] = color.g;
+	pixelValues[(x + y*width) * 3 + 2] = color.b;
 }
 
-void Image::fillImage(Rgb* color){
+void Image::fillImage(glm::vec3 &color){
 
 	for (unsigned int y = 0; y < height; y++){
 		for (unsigned int x = 0; x < width; x++){
@@ -36,6 +37,8 @@ void Image::saveAsPPM(const char *filename)
 
 		float* currentPixel = pixelValues;
 
+
+
 		// loop over each pixel in the image, clamp from 0 to 255, convert to char format and write to file. 
 
 		for (unsigned int h = 0; h < height; ++h){
@@ -47,7 +50,7 @@ void Image::saveAsPPM(const char *filename)
 
 				outFile << static_cast<char>(r) << static_cast<char>(g) << static_cast<char>(b);
 				//std::cout << "Color at " << w << ":" << h << " = " << r << ":" << g  << ":" << b << std::endl;
-				
+
 				currentPixel += 3;
 			}
 		}

@@ -25,6 +25,4 @@ public:
 	glm::vec3 position; //the corner with the largest x-value, y-value and z-value
 	glm::vec3 dimension; //height, width, depth
 	std::vector<Object3D*> objects; //vector storing pointers to the objects inside this bounding box
-
 };
-

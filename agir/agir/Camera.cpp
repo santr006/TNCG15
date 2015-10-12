@@ -79,7 +79,7 @@ void Camera::render()
 			glm::vec3 rayStart(leftUpperCorner.x + STEP_BETWEEN_PIXELS * j, leftUpperCorner.y - STEP_BETWEEN_PIXELS * i, leftUpperCorner.z);
 			glm::vec3 rayDir = rayStart - position; //the pixel's position - the cameras position
 			//save the colors in the image
-			im.setPixel(j, i, &generateRay(rayStart, rayDir));
+//			im.setPixel(j, i, &generateRay(rayStart, rayDir));
 		}
 	}
 

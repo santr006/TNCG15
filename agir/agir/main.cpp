@@ -91,38 +91,19 @@ void display(){
 
 int main(int argc, char **argv)
 {
-	//  Initialize GLUT and process user parameters
-/*	glutInit(&argc, argv);
+	/*
 
-	//  Request double buffered true color window with Z-buffer
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-
-	// Create window
-	glutCreateWindow("Awesome Cube");
-
-	//  Enable Z-buffer depth test
-	glEnable(GL_DEPTH_TEST);
-
-	// Callback functions
-	glutDisplayFunc(display);
-	//glutSpecialFunc(specialKeys);
-
-	//  Pass control to GLUT for events
-	//glutMainLoop();
-
-	*/
-
-	/*std::cout << "Rendering test" << std::endl;
+	std::cout << "Rendering test" << std::endl;
 	// Image render test
-	Image im(480, 360);
-	Rgb color(1.0f, 0.f, 0.f);
-	im.fillImage(&color);
+	Image im(640, 480);
+	glm::vec3 color(1.0f, 0.0f, 0.0f);
+	im.fillImage(color);
 
 	//Create camera
 	Camera cam();
 
 	//Render image
-	cam.render();
+	//cam.render();
 
 	//im.fillImage(color);
 	string fileName = "render.ppm";
