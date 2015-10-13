@@ -14,21 +14,22 @@ using namespace std;
 int main(int argc, char **argv)
 {
 	World world;
+	int width = 200, height = 200;
 
 	Object3D* objectToAdd;
 	BoundingBox* bboxToAdd;
 	Light* lightToAdd;
 
-	objectToAdd = new Box3D(glm::vec3(5.f, 5.f, -10.f), glm::vec3(0.f), glm::vec3(1.f), glm::vec3(0.5f, 0.5f, 0.f));
+	objectToAdd = new Box3D(glm::vec3(0.f, 0.f, -1.5f), glm::vec2(2.0f, 2.0f), glm::vec3(0.25f), glm::vec3(0.5f, 0.5f, 0.f));
 	world.objectList.push_back(objectToAdd);
-	objectToAdd = new Box3D(glm::vec3(-3.f, 7.f, -6.f), glm::vec3(0.f), glm::vec3(1.f), glm::vec3(1.0f, 0.5f, 1.f));
-	world.objectList.push_back(objectToAdd);
+	//objectToAdd = new Box3D(glm::vec3(-3.f, 7.f, -6.f), glm::vec3(0.f), glm::vec3(1.f), glm::vec3(1.0f, 0.5f, 1.f));
+	//world.objectList.push_back(objectToAdd);
 
-	lightToAdd = new Light(glm::vec3(0.f), glm::vec3(1.f), 1.f);
-	world.addLight(lightToAdd);
+	//lightToAdd = new Light(glm::vec3(0.f), glm::vec3(1.f), 1.f);
+	//world.addLight(lightToAdd);
 
-	Camera cam(&world); // create a camera with default constructor -> at (0,0,0)
-	//cam.render();
+	Camera cam(&world, width, height); // create a camera with default constructor -> at (0,0,0)
+	cam.render();
 
 	/*
 	std::cout << "Rendering test" << std::endl;

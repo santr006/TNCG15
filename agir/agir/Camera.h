@@ -18,6 +18,7 @@ class Camera
 {
 public:
 	Camera(World* w);
+	Camera(World* w, int width, int height);
 	~Camera();
 	
 	//uses ray tracing to find a color for every pixel
@@ -25,7 +26,7 @@ public:
 
 	//creates a ray from the position pos in the direction dir
 	//and returns the color the path of the ray defines
-	Rgb generateRay(glm::vec3 pos, glm::vec3 dir);
+	glm::vec3 generateRay(glm::vec3 pos, glm::vec3 dir);
 
 	World* theWorld; // pointer to the world that will be rendered
 	glm::vec3 position; //position of the observer

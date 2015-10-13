@@ -51,10 +51,10 @@ bool Sphere3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoi
 
 			//step back along the ray until we are at the surface
 			intersectionPoint = glm::vec3(zIntersect.x, zIntersect.y, zIntersect.z);
-			float stepInSphere = radius * 0.1;
+			float stepInSphere = radius * 0.1f;
 			while (glm::pow(intersectionPoint.x, 2) + glm::pow(intersectionPoint.y, 2) + glm::pow(intersectionPoint.z, 2) < glm::pow(radius, 2))
 			{
-				intersectionPoint -= newDir * stepInSphere;
+				intersectionPoint -= glm::vec3(newDir.x, newDir.y, newDir.z) * stepInSphere;
 			}
 
 			//the position in world coordinates where the ray intersects the box are found and saved
