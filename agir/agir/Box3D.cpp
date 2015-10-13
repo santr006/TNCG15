@@ -16,15 +16,15 @@ bool Box3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint)
 
 	//move the object so that this coordinate system's origin is at the world coordinate's origin
 	glm::mat4 translation(1, 0, 0, -position.x,
-						  0, 1, 0, -position.y,
-						  0, 0, 1, -position.z,
-						  0, 0, 0, 1);
+		0, 1, 0, -position.y,
+		0, 0, 1, -position.z,
+		0, 0, 0, 1);
 
 	//rotate the object so it's coordinate system's orientation is the same as the world coordinate's origin
-	glm::mat4 rotation( glm::cos(-rotation.x), -glm::sin(-rotation.x)*glm::sin(-rotation.y), -glm::sin(-rotation.x)*glm::cos(-rotation.y), 0,
-						0, glm::cos(-rotation.y), -glm::sin(-rotation.y), 0,
-						glm::sin(-rotation.x), glm::cos(-rotation.x)*glm::sin(-rotation.y), glm::cos(-rotation.x)*glm::cos(-rotation.y), 0,
-						0, 0, 0, 1);
+	glm::mat4 rotation(glm::cos(-rotation.x), -glm::sin(-rotation.x)*glm::sin(-rotation.y), -glm::sin(-rotation.x)*glm::cos(-rotation.y), 0,
+		0, glm::cos(-rotation.y), -glm::sin(-rotation.y), 0,
+		glm::sin(-rotation.x), glm::cos(-rotation.x)*glm::sin(-rotation.y), glm::cos(-rotation.x)*glm::cos(-rotation.y), 0,
+		0, 0, 0, 1);
 
 	glm::mat4 worldToObject = rotation * translation;
 	glm::vec4 newStartPos = worldToObject * glm::vec4(r.startPosition, 1);

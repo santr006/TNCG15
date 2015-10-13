@@ -6,93 +6,31 @@
 
 #include "Image.h"
 #include "Camera.h"
-
-
-#define GL_GLEXT_PROTOTYPES
-#ifdef __APPLE__
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
+#include "Box3D.h"
+#include "Object3D.h"
 
 using namespace std;
 
-/*
-void display(){
-
-	//  Clear screen and Z-buffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// Reset transformations
-	glLoadIdentity();
-
-	// Rotate when user changes rotate_x and rotate_y
-	glRotatef(45, 1.0, 0.0, 0.0);
-	glRotatef(45, 0.0, 1.0, 0.0);
-
-	//Multi-colored side - FRONT
-	glBegin(GL_POLYGON);
-
-	glColor3f(1.0, 0.0, 0.0);     glVertex3f(0.5, -0.5, -0.5);      // P1 is red
-	glColor3f(0.0, 1.0, 0.0);     glVertex3f(0.5, 0.5, -0.5);      // P2 is green
-	glColor3f(0.0, 0.0, 1.0);     glVertex3f(-0.5, 0.5, -0.5);      // P3 is blue
-	glColor3f(1.0, 0.0, 1.0);     glVertex3f(-0.5, -0.5, -0.5);      // P4 is purple
-
-	// White side - BACK
-	glBegin(GL_POLYGON);
-	glColor3f(1.0, 1.0, 1.0);
-	glVertex3f(0.5, -0.5, 0.5);
-	glVertex3f(0.5, 0.5, 0.5);
-	glVertex3f(-0.5, 0.5, 0.5);
-	glVertex3f(-0.5, -0.5, 0.5);
-	glEnd();
-
-	// Purple side - RIGHT
-	glBegin(GL_POLYGON);
-	glColor3f(1.0, 0.0, 1.0);
-	glVertex3f(0.5, -0.5, -0.5);
-	glVertex3f(0.5, 0.5, -0.5);
-	glVertex3f(0.5, 0.5, 0.5);
-	glVertex3f(0.5, -0.5, 0.5);
-	glEnd();
-
-	// Green side - LEFT
-	glBegin(GL_POLYGON);
-	glColor3f(0.0, 1.0, 0.0);
-	glVertex3f(-0.5, -0.5, 0.5);
-	glVertex3f(-0.5, 0.5, 0.5);
-	glVertex3f(-0.5, 0.5, -0.5);
-	glVertex3f(-0.5, -0.5, -0.5);
-	glEnd();
-
-	// Blue side - TOP
-	glBegin(GL_POLYGON);
-	glColor3f(0.0, 0.0, 1.0);
-	glVertex3f(0.5, 0.5, 0.5);
-	glVertex3f(0.5, 0.5, -0.5);
-	glVertex3f(-0.5, 0.5, -0.5);
-	glVertex3f(-0.5, 0.5, 0.5);
-	glEnd();
-
-	// Red side - BOTTOM
-	glBegin(GL_POLYGON);
-	glColor3f(1.0, 0.0, 0.0);
-	glVertex3f(0.5, -0.5, -0.5);
-	glVertex3f(0.5, -0.5, 0.5);
-	glVertex3f(-0.5, -0.5, 0.5);
-	glVertex3f(-0.5, -0.5, -0.5);
-	glEnd();
-
-	glFlush();
-	glutSwapBuffers();
-}
-
-*/
-
 int main(int argc, char **argv)
 {
-	/*
+	World world;
 
+	Object3D* objectToAdd;
+	BoundingBox* bboxToAdd;
+	Light* lightToAdd;
+
+	objectToAdd = new Box3D(glm::vec3(5.f, 5.f, -10.f), glm::vec3(0.f), glm::vec3(1.f), glm::vec3(0.5f, 0.5f, 0.f));
+	world.objectList.push_back(objectToAdd);
+	objectToAdd = new Box3D(glm::vec3(-3.f, 7.f, -6.f), glm::vec3(0.f), glm::vec3(1.f), glm::vec3(1.0f, 0.5f, 1.f));
+	world.objectList.push_back(objectToAdd);
+
+	lightToAdd = new Light(glm::vec3(0.f), glm::vec3(1.f), 1.f);
+	world.addLight(lightToAdd);
+
+	Camera cam(&world); // create a camera with default constructor -> at (0,0,0)
+	//cam.render();
+
+	/*
 	std::cout << "Rendering test" << std::endl;
 	// Image render test
 	Image im(640, 480);

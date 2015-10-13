@@ -15,6 +15,7 @@ public:
 	// public methods
 	void addObject3D(Object3D* o);
 	void addLight(Light* l);
+	void addBBox(BoundingBox* bb);
 
 	std::vector<Object3D*> objectList;
 	std::vector<Light*> lightList;

@@ -9,7 +9,7 @@ class Object3D
 public:
 	
 	Object3D();
-	virtual ~Object3D() = 0;	// pure virtual destructor
+	virtual ~Object3D();
 
 	virtual bool testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint) = 0; // pure virtual function
 
