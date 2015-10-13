@@ -3,7 +3,7 @@
 Box3D::Box3D(glm::vec3 pos, glm::vec2 rot, glm::vec3 dim, glm::vec3 col)
 {
 	position = pos;
-	rotation = -rot;
+	rotation = rot;
 	dimensions = dim;
 	color = col;
 }
@@ -54,9 +54,10 @@ bool Box3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint)
 			if (axisAlignedPlaneIntersect(newRay, step, intersectionPoint, normal))
 			{
 				std::cout << "hit side " << i << std::endl; 
+				//tillfällig
+				intersectionPoint.x = i;
 				return true;
 			}
-			//do something with intersectionPoint later
 		}
 	}
 	//handle multiple hits later

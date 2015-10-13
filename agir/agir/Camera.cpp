@@ -79,7 +79,9 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 			//if it hits the color will be white, if not the color is still black
 			if (theWorld->objectList.at(j)->testRayIntersection(r, iterationStep, objectIntersectionPoint))
 			{
-				p = glm::vec3(255, 255, 255);
+				//do something with objectIntersectionPoint later
+				float c = 1.0f / 6.0f * (objectIntersectionPoint.x+1);
+				p = glm::vec3(c, c, c);
 			}
 			//use object intersection point in a later stage
 		}
