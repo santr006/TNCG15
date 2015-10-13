@@ -29,6 +29,12 @@ bool Box3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint)
 	glm::mat4 worldToObject = rotation * translation;
 	glm::vec4 newStartPos = worldToObject * glm::vec4(r.startPosition, 1);
 	glm::vec4 newDir = worldToObject * glm::vec4(r.direction, 1);
+
+	//check which surfaces has the normals in the right direction for the ray to be able to hit them
+	/*glm::vec4 x = glm::vec4(newStartPos.x - dimensions.x, newStartPos.y, newStartPos.z, 1);
+	glm::vec4 y = glm::vec4(newStartPos.x, newStartPos.y - dimensions.y, newStartPos.z, 1);
+	glm::vec3 normal = glm::cross();
+	if (glm::dot(glm::normalize(newDir), ))*/
 	
 	//where does the ray intersect the first plane orthogonal to the z-axis?
 	glm::vec4 zIntersect = newStartPos;

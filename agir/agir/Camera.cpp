@@ -27,26 +27,41 @@ Rgb Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 	//did the ray hit anything?
 
 	//checks if the given ray intersects any object in the scene
-	//check if the ray hits any bounding box
-	for (int i = 0; i < theWorld.BBoxList.size(); i++)
+	//if there are bounding boxes in the scene
+	if (theWorld.BBoxList.size() != 0) //check if the ray hits any bounding box
 	{
-		glm::vec3 boxIntersectionPoint;
+		for (int i = 0; i < theWorld.BBoxList.size(); i++)
+		{
+			glm::vec3 boxIntersectionPoint;
+			glm::vec3 objectIntersectionPoint;
+
+			//if it did check the objects inside it
+			if (theWorld.BBoxList.at(i)->intersects(r, iterationStep, boxIntersectionPoint))
+			{
+				//create a new ray from the intersection point
+				Ray newRay(boxIntersectionPoint, r.direction);
+
+				//check if the ray hits any of the objects inside the bounding box
+				for (int j = 0; j < theWorld.BBoxList.at(i)->objects.size(); j++)
+				{
+					//if it did the color will be white, if not the color is still black
+					if (theWorld.BBoxList.at(i)->objects.at(j)->testRayIntersection(newRay, iterationStep, objectIntersectionPoint))
+						p.setRGB(255);
+					//use object intersection point in a later stage
+				}
+			}
+		}
+	}
+	else //check if the ray hits any object
+	{
 		glm::vec3 objectIntersectionPoint;
 
-		//if it did check the objects inside it
-		if (theWorld.BBoxList.at(i)->intersects(r, iterationStep, boxIntersectionPoint))
+		for (int j = 0; j < theWorld.objectList.size(); j++)
 		{
-			//create a new ray from the intersection point
-			Ray newRay(boxIntersectionPoint, r.direction);
-
-			//check if the ray hits any of the objects inside the bounding box
-			for (int j = 0; j < theWorld.BBoxList.at(i)->objects.size(); j++)
-			{
-				//if it did the color will be white, if not the color is still black
-				if (theWorld.BBoxList.at(i)->objects.at(j)->testRayIntersection(newRay, iterationStep, objectIntersectionPoint))
-					p.setRGB(255);
-					//use object intersection point in a later stage
-			}
+			//if it hits the color will be white, if not the color is still black
+			if (theWorld.BBoxList.at(i)->objects.at(j)->testRayIntersection(r, iterationStep, objectIntersectionPoint))
+				p.setRGB(255);
+			//use object intersection point in a later stage
 		}
 	}
 
