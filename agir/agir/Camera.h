@@ -17,7 +17,7 @@ const float STEP_BETWEEN_PIXELS = 0.005f;
 class Camera
 {
 public:
-	Camera();
+	Camera(World* w);
 	~Camera();
 	
 	//uses ray tracing to find a color for every pixel
@@ -27,7 +27,7 @@ public:
 	//and returns the color the path of the ray defines
 	Rgb generateRay(glm::vec3 pos, glm::vec3 dir);
 
-	World theWorld; //the world that will be rendered
+	World* theWorld; // pointer to the world that will be rendered
 	glm::vec3 position; //position of the observer
 	glm::vec3 upDirection; //the direction that is up for the camera, must be normalized
 	glm::vec3 lookAtDirection; //the direction that is forward for the camera, must be normalized

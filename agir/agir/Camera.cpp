@@ -1,7 +1,8 @@
 #include "Camera.h"
 
-Camera::Camera()
+Camera::Camera(World* w)
 {
+	theWorld = w;
 	position = glm::vec3(0, 0, 0);
 	upDirection = glm::vec3(0, 1, 0);
 	lookAtDirection = glm::vec3(0, 0, -1);
@@ -28,22 +29,22 @@ Rgb Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 
 	//checks if the given ray intersects any object in the scene
 	//check if the ray hits any bounding box
-	for (int i = 0; i < theWorld.BBoxList.size(); i++)
+	for (int i = 0; i < theWorld->BBoxList.size(); i++)
 	{
 		glm::vec3 boxIntersectionPoint;
 		glm::vec3 objectIntersectionPoint;
 
 		//if it did check the objects inside it
-		if (theWorld.BBoxList.at(i)->intersects(r, iterationStep, boxIntersectionPoint))
+		if (theWorld->BBoxList.at(i)->intersects(r, iterationStep, boxIntersectionPoint))
 		{
 			//create a new ray from the intersection point
 			Ray newRay(boxIntersectionPoint, r.direction);
 
 			//check if the ray hits any of the objects inside the bounding box
-			for (int j = 0; j < theWorld.BBoxList.at(i)->objects.size(); j++)
+			for (int j = 0; j < theWorld->BBoxList.at(i)->objects.size(); j++)
 			{
 				//if it did the color will be white, if not the color is still black
-				if (theWorld.BBoxList.at(i)->objects.at(j)->testRayIntersection(newRay, iterationStep, objectIntersectionPoint))
+				if (theWorld->BBoxList.at(i)->objects.at(j)->testRayIntersection(newRay, iterationStep, objectIntersectionPoint))
 					p.setRGB(255);
 					//use object intersection point in a later stage
 			}

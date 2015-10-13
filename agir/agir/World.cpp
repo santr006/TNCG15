@@ -18,3 +18,8 @@ void World::addLight(Light* l)
 {
 	lightList.push_back(l);
 }
+
+void World::addBBox(BoundingBox* bb)
+{
+	BBoxList.push_back(bb);
+}
