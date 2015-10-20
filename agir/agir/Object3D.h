@@ -4,27 +4,21 @@
 #include <gtc\matrix_transform.hpp>
 #include "Rgb.h"
 #include "Ray.h"
+#include "Intersection.h"
 
 class Object3D
 {
 public:
-	
-	Object3D();
-	virtual ~Object3D();
 
-	virtual bool testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint) = 0; // pure virtual function
+	Object3D(){};
+	virtual ~Object3D(){};
 
-	glm::vec3 getPosition(){ return position; }
-	glm::vec2 getRotation(){ return rotation; }
-	glm::vec3 getColor(){ return color; }
+	//virtual bool testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint) = 0; // pure virtual function
+	virtual Intersection* rayIntersection(Ray &r) = 0;
+
+	glm::mat4 worldToLocal;
+	glm::vec3 center;
+	glm::vec4 color;
 
 protected:
-
-	glm::vec3 position;
-	glm::vec2 rotation; //rotation round x-axis and rotation round y-axis
-
-	glm::vec3 color;  // to be replaced with material?
-				// TODO: BRDF with material properties
-
 };
-

@@ -10,6 +10,30 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Color.cpp" />
+    <ClCompile Include="Image.cpp" />
+    <ClCompile Include="Light.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Object3D.cpp" />
+    <ClCompile Include="Ray.cpp" />
+    <ClCompile Include="Sphere3D.cpp" />
+    <ClCompile Include="World.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\glm-0.9.7.1\glm\glm\gtc\constants.hpp" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Color.h" />
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="Intersection.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="Object3D.h" />
+    <ClInclude Include="Options.h" />
+    <ClInclude Include="Ray.h" />
+    <ClInclude Include="Sphere3D.h" />
+    <ClInclude Include="World.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{186A0CCC-2818-4A32-9BDF-E9D2C95119E0}</ProjectGuid>
     <RootNamespace>agir</RootNamespace>
@@ -44,7 +68,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\XxX_DEATH_LORD_1337\Documents\Advanced Global Illumination and Rendering\Project\TNCG15\glew-1.11.0\include;C:\Users\XxX_DEATH_LORD_1337\Documents\Advanced Global Illumination and Rendering\Project\TNCG15\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\XxX_DEATH_LORD_1337\Documents\Advanced Global Illumination and Rendering\Project\TNCG15\glm-0.9.7.1\glm\glm</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -59,7 +83,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Sandra\Google Drive\TNCG15\projekt\glew-1.11.0\include;C:\Users\Sandra\Google Drive\TNCG15\projekt\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\XxX_DEATH_LORD_1337\Documents\Advanced Global Illumination and Rendering\Project\TNCG15\glm-0.9.7.1\glm\glm</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -69,15 +93,6 @@
       <AdditionalDependencies>glew32.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Image.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Rgb.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Image.h" />
-    <ClInclude Include="Rgb.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

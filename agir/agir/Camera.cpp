@@ -32,60 +32,95 @@ Camera::~Camera(){}
 //and returns the color the path of the ray defines
 glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 {
-	//create a color: black
-	glm::vec3 p(0,0,0);
+		//create a color: black
+		glm::vec3 p(0,0,0);
 
-	//Send a ray from pos in the direction dir
-	Ray r(pos, dir);
 
-	//did the ray hit anything?
+		/*
+		//Send a ray from pos in the direction dir
+		Ray r(pos, dir);
 
-	//checks if the given ray intersects any object in the scene
+		//did the ray hit anything?
 
-	//check if the ray hits any bounding box
-	//if there are bounding boxes in the scene
-	if (theWorld->BBoxList.size() != 0) //check if the ray hits any bounding box
-	{
+		//checks if the given ray intersects any object in the scene
+
+		//check if the ray hits any bounding box
+		//if there are bounding boxes in the scene
+		if (theWorld->BBoxList.size() != 0) //check if the ray hits any bounding box
+		{
 		for (unsigned int i = 0; i < theWorld->BBoxList.size(); i++)
 		{
-			glm::vec3 boxIntersectionPoint;
-			glm::vec3 objectIntersectionPoint;
+		glm::vec3 boxIntersectionPoint;
+		glm::vec3 objectIntersectionPoint;
 
-			//if it did check the objects inside it
-			if (theWorld->BBoxList.at(i)->intersects(r, iterationStep, boxIntersectionPoint))
-			{
-				//create a new ray from the intersection point
-				Ray newRay(boxIntersectionPoint, r.direction);
+		//if it did check the objects inside it
+		if (theWorld->BBoxList.at(i)->intersects(r, iterationStep, boxIntersectionPoint))
+		{
+		//create a new ray from the intersection point
+		Ray newRay(boxIntersectionPoint, r.direction);
 
-				//check if the ray hits any of the objects inside the bounding box
-				for (unsigned int j = 0; j < theWorld->BBoxList.at(i)->objects.size(); j++)
-				{
-					//if it did the color will be white, if not the color is still black
-					if (theWorld->BBoxList.at(i)->objects.at(j)->testRayIntersection(newRay, iterationStep, objectIntersectionPoint))
-					{
-						p = glm::vec3(255, 255, 255); std::cout << "hit" << std::endl;
-					}
-					//use object intersection point in a later stage
-				}
-			}
+		//check if the ray hits any of the objects inside the bounding box
+		for (unsigned int j = 0; j < theWorld->BBoxList.at(i)->objects.size(); j++)
+		{
+		//if it did the color will be white, if not the color is still black
+		if (theWorld->BBoxList.at(i)->objects.at(j)->testRayIntersection(newRay, iterationStep, objectIntersectionPoint))
+		{
+		p = glm::vec3(255, 255, 255); std::cout << "hit" << std::endl;
 		}
-	}
-	else //check if the ray hits any object
-	{
+		//use object intersection point in a later stage
+		}
+		}
+		}
+		}
+		else //check if the ray hits any object
+		{
 		glm::vec3 objectIntersectionPoint;
 
 		for (unsigned int j = 0; j < theWorld->objectList.size(); j++)
 		{
-			//if it hits the color will be white, if not the color is still black
-			if (theWorld->objectList.at(j)->testRayIntersection(r, iterationStep, objectIntersectionPoint))
-			{
-				p = glm::vec3(255, 255, 255);
-			}
-			//use object intersection point in a later stage
+		//if it hits the color will be white, if not the color is still black
+		if (theWorld->objectList.at(j)->testRayIntersection(r, iterationStep, objectIntersectionPoint))
+		{
+		p = glm::vec3(255, 255, 255);
+		}
+		//use object intersection point in a later stage
+		}
+		}
+
+
+		*/
+		return p;
+}
+
+glm::vec4 Camera::getColor(glm::vec3 pos, glm::vec3 dir)
+{
+	Ray ray(pos, dir);
+
+	Intersection *in = nullptr;
+
+	// go through all objects and find closest intersection
+	for (int o = 0; o < theWorld->objectList.size(); o++){
+		Intersection *temp;
+		Object3D *obj = theWorld->objectList.at(o);
+		temp = obj->rayIntersection(ray);
+
+		if (temp != nullptr){
+			in = temp;
 		}
 	}
 
-	return p;
+	// do shadow ray check between light sources and intersection point
+
+	// return color
+
+	if (in != nullptr)
+	{
+		return in->color;
+	}
+	else
+	{
+		return glm::vec4(0.0f);
+	}
 }
 
 //uses ray tracing to find a color for every pixel
@@ -94,7 +129,7 @@ void Camera::render()
 	//create the picture to be rendered to
 	Image im(widthInPixels, heightInPixels);
 	std::cout << "created image" << std::endl;
-	
+
 	//place near cutting plane
 	glm::vec3 center = position + lookAtDirection * nearPlane;
 	float height = heightInPixels * STEP_BETWEEN_PIXELS;
@@ -123,8 +158,11 @@ void Camera::render()
 			//std::cout << "setting pixel in (" << rayStart.x << ", " << rayStart.y << ", " << rayStart.z << ")" << std::endl;
 			//std::cout << "dir (" << rayDir.x << ", " << rayDir.y << ", " << rayDir.z << ")" << std::endl;
 
+			glm::vec4 color = getColor(rayStart, rayDir);
+			im.setPixel(j, i, glm::vec3(color.r, color.g, color.b));
+
 			//save the colors in the image
-			im.setPixel(j, i, generateRay(rayStart, rayDir));
+			//im.setPixel(j, i, generateRay(rayStart, rayDir));
 		}
 	}
 

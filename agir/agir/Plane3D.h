@@ -5,9 +5,12 @@
 class Plane3D : public Object3D
 {
 public:
-	Plane3D(glm::vec3 pos, glm::vec3 rot, glm::vec2 dim, glm::vec3 col);
-	~Plane3D();
+	Plane3D(glm::mat4 w2l, glm::vec4 c)
+	{
+		worldToLocal = w2l, color = c;
+		center = glm::vec3(worldToLocal[3]);
+	}
+	~Plane3D(){};
 
 private:
-	glm::vec2 dimensions;
 };
