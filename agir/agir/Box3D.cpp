@@ -13,7 +13,7 @@ Box3D::~Box3D()
 	// bye bye boxie
 }
 
-bool Box3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint)
+Intersection* Box3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint)
 {
 	//Switch to this object's coordinate system
 
@@ -56,13 +56,14 @@ bool Box3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint)
 				std::cout << "hit side " << i << std::endl; 
 				//tillfällig
 				intersectionPoint.x = i;
-				return true;
+				//return true;
+				return nullptr;
 			}
 		}
 	}
 	//handle multiple hits later
 
-	return false;
+	return nullptr;
 }
 
 glm::vec3 Box3D::getNormalForSide(int side)

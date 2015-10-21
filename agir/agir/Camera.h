@@ -4,9 +4,11 @@
  ******************************************************/
 
 #pragma once
+
 #include <glm.hpp>
 #include <vector>
-#include "Rgb.h"
+#include <iostream>
+#include <string>
 #include "Image.h"
 #include "Ray.h"
 #include "World.h"
