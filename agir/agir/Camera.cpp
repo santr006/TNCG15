@@ -72,7 +72,7 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 	}
 	else //check if the ray hits any object
 	{
-		glm::vec3 objectIntersectionPoint;
+		glm::vec3 objectIntersectionPoint(0);
 
 		for (unsigned int j = 0; j < theWorld->objectList.size(); j++)
 		{

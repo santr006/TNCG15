@@ -10,6 +10,5 @@ public:
 
 	bool testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint);
 
-private:
 	float radius;
 };

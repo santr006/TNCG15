@@ -14,12 +14,6 @@ public:
 
 	virtual bool testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint) = 0; // pure virtual function
 
-	glm::vec3 getPosition(){ return position; }
-	glm::vec2 getRotation(){ return rotation; }
-	glm::vec3 getColor(){ return color; }
-
-protected:
-
 	glm::vec3 position;
 	glm::vec2 rotation; //rotation round x-axis and rotation round y-axis
 
