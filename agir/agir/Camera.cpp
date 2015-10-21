@@ -63,7 +63,7 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 					//if it did the color will be white, if not the color is still black
 					if (theWorld->BBoxList.at(i)->objects.at(j)->testRayIntersection(newRay, iterationStep, objectIntersectionPoint))
 					{
-						p = glm::vec3(255, 255, 255); //std::cout << "hit" << std::endl;
+						p = glm::vec3(1.f, 1.f, 1.f); //std::cout << "hit" << std::endl;
 					}
 					//use object intersection point in a later stage
 				}
@@ -73,36 +73,26 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 	else //check if the ray hits any object
 	{
 		glm::vec3 objectIntersectionPoint(0);
+		Intersection* closestInsersection = nullptr;
 
 		for (unsigned int j = 0; j < theWorld->objectList.size(); j++)
 		{
 			// A new dawn.
 
-			Intersection* i = nullptr;
-			i = theWorld->objectList.at(j)->testRayIntersection(r, iterationStep, objectIntersectionPoint);
+			Intersection* current = nullptr;
+			current = theWorld->objectList.at(j)->testRayIntersection(r, iterationStep, objectIntersectionPoint);
 
-			if (i != nullptr){
-				return i->color;
+			if (current != nullptr)
+			{
+				closestInsersection = current;
 			}
-			else{
-				return glm::vec3(0);
-			}
-
-
-			/*	//if it hits the color will be white, if not the color is still black
-				if (theWorld->objectList.at(j)->testRayIntersection(r, iterationStep, objectIntersectionPoint))
-				{
-				//do something with objectIntersectionPoint later
-				float c = 1.0f / 6.0f * (objectIntersectionPoint.x+1);
-				p = glm::vec3(c, c, c);
-				}
-				//use object intersection point in a later stage
-				}
-				*/
 		}
+
+		if (closestInsersection != nullptr)
+		p = closestInsersection->color;
 	}
 
-	//return p;
+	return p;
 }
 
 //uses ray tracing to find a color for every pixel
@@ -111,7 +101,6 @@ void Camera::render()
 	//create the picture to be rendered to
 	Image im(widthInPixels, heightInPixels);
 	std::cout << "created image" << std::endl;
-
 
 	//place near cutting plane
 	glm::vec3 center = position + lookAtDirection * nearPlane;
