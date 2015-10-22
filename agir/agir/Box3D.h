@@ -13,5 +13,5 @@ private:
 	bool axisAlignedPlaneIntersect(Ray r, float step, glm::vec3 &intersectionPoint, glm::vec3 normalAxis);
 	glm::vec3 getNormalForSide(int side);
 
-	glm::vec3 dimensions;
+	glm::vec3 minCorner;
 };
