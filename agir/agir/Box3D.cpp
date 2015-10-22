@@ -4,7 +4,7 @@ Box3D::Box3D(glm::vec3 pos, glm::vec2 rot, glm::vec3 dim, glm::vec3 col)
 {
 	position = pos;
 	rotation = rot;
-	minCorner = dim;
+	dimensions = dim;
 	color = col;
 }
 
@@ -13,13 +13,12 @@ Box3D::~Box3D()
 	// bye bye boxie
 }
 
-bool Box3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint)
+Intersection* Box3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint)
 {
-	//switch strategy to plane/trianle intersection
-
+	return false;
 	
-
-	
+	/*//switch strategy to plane/trianle intersection
+		
 	
 	//Switch to this object's coordinate system
 
@@ -36,13 +35,13 @@ bool Box3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint)
 	//direction only gets rotated
 	glm::vec4 newDir = rotat * glm::vec4(r.direction, 1);
 
-	/*std::cout << " translation: " << translation[0][3] << " " << translation[1][3] << " " << translation[2][3] << std::endl;
+	std::cout << " translation: " << translation[0][3] << " " << translation[1][3] << " " << translation[2][3] << std::endl;
 	std::cout << " old object position: " << position.x << " " << position.y << " " << position.z << std::endl;
 	std::cout << " new object position: " << objectPos.x << " " << objectPos.y << " " << objectPos.z << std::endl;
 	std::cout << " old ray position: " << r.startPosition.x << " " << r.startPosition.y << " " << r.startPosition.z << std::endl;
 	std::cout << " new ray position: " << newStartPos.x << " " << newStartPos.y << " " << newStartPos.z << std::endl;
 	std::cout << " old dir: " << r.direction.x << " " << r.direction.y << " " << r.direction.z << std::endl;
-	std::cout << " new dir: " << newDir.x << " " << newDir.y << " " << newDir.z << std::endl;*/
+	std::cout << " new dir: " << newDir.x << " " << newDir.y << " " << newDir.z << std::endl;
 
 	//Ray is discribed by the line r.startposition + t*r.direction
 	//We want to find the t where the ray hits the cube closest to the origin of the ray
@@ -116,7 +115,7 @@ bool Box3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint)
 	if (tzmax < tmax)
 		tmax = tzmax;
 
-	return true;
+	return true;*/
 
 	/*//Ray is discribed by the line r.startposition + t*r.direction
 	//We want to find the t where the ray hits the cube closest to the origin of the ray
@@ -236,13 +235,18 @@ bool Box3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint)
 				std::cout << "hit side " << i << std::endl; 
 				//tillfällig
 				intersectionPoint.x = i;
-				return true;
+				//return true;
+				return nullptr;
 			}
 		}
 	}
 	//handle multiple hits later
 
-	return false;*/
+<<<<<<< HEAD
+	return false;
+=======
+	return nullptr;
+>>>>>>> a48d89d360ddee1a2fe40f15c90238f6dcf8eda4*/
 }
 
 glm::vec3 Box3D::getNormalForSide(int side)

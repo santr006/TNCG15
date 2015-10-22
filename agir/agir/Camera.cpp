@@ -33,7 +33,7 @@ Camera::~Camera(){}
 glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 {
 	//create a color: black
-	glm::vec3 p(0,0,0);
+	glm::vec3 p(0, 0, 0);
 
 	//Send a ray from pos in the direction dir
 	Ray r(pos, dir);
@@ -63,7 +63,7 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 					//if it did the color will be white, if not the color is still black
 					if (theWorld->BBoxList.at(i)->objects.at(j)->testRayIntersection(newRay, iterationStep, objectIntersectionPoint))
 					{
-						p = glm::vec3(255, 255, 255); std::cout << "hit" << std::endl;
+						p = glm::vec3(1.f, 1.f, 1.f); //std::cout << "hit" << std::endl;
 					}
 					//use object intersection point in a later stage
 				}
@@ -73,18 +73,23 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 	else //check if the ray hits any object
 	{
 		glm::vec3 objectIntersectionPoint(0);
+		Intersection* closestInsersection = nullptr;
 
 		for (unsigned int j = 0; j < theWorld->objectList.size(); j++)
 		{
-			//if it hits the color will be white, if not the color is still black
-			if (theWorld->objectList.at(j)->testRayIntersection(r, iterationStep, objectIntersectionPoint))
+			// A new dawn.
+
+			Intersection* current = nullptr;
+			current = theWorld->objectList.at(j)->testRayIntersection(r, iterationStep, objectIntersectionPoint);
+
+			if (current != nullptr)
 			{
-				//do something with objectIntersectionPoint later
-				float c = 1.0f / 6.0f * (objectIntersectionPoint.x+1);
-				p = glm::vec3(c, c, c);
+				closestInsersection = current;
 			}
-			//use object intersection point in a later stage
 		}
+
+		if (closestInsersection != nullptr)
+		p = closestInsersection->color;
 	}
 
 	return p;
@@ -96,7 +101,7 @@ void Camera::render()
 	//create the picture to be rendered to
 	Image im(widthInPixels, heightInPixels);
 	std::cout << "created image" << std::endl;
-	
+
 	//place near cutting plane
 	glm::vec3 center = position + lookAtDirection * nearPlane;
 	float height = heightInPixels * STEP_BETWEEN_PIXELS;

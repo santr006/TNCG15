@@ -16,7 +16,7 @@ Plane3D::~Plane3D()
 }
 
 
-bool Plane3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint)
+Intersection* Plane3D::testRayIntersection(Ray &r, float step, glm::vec3 &intersectionPoint)
 {
 	/*std::cout << "ray start pos " << r.startPosition.x << " " << r.startPosition.y << " " << r.startPosition.z << std::endl;
 	std::cout << "ray direction " << r.direction.x << " " << r.direction.y << " " << r.direction.z << std::endl;*/
@@ -109,7 +109,16 @@ bool Plane3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoin
 				//bottomSide
 				Bvector = glm::vec3(B - lowerRightCorner);
 				if (glm::dot(glm::cross(Bvector, bottomSide), planeNormal) > 0)
-					return true;
+				{
+					// If the object is blocked
+					if (t > r.tMax)
+						return nullptr;
+
+					//else
+					r.tMax = t;
+					intersectionPoint = r.startPosition + t * r.direction;
+					return new Intersection(intersectionPoint, glm::normalize(intersectionPoint - position), color);
+				}
 			}
 		}
 	}

@@ -13,20 +13,32 @@ Sphere3D::~Sphere3D()
 	// so long sphere!
 }
 
-bool Sphere3D::testRayIntersection(Ray r, float step, glm::vec3 &intersectionPoint)
+Intersection* Sphere3D::testRayIntersection(Ray& r, float step, glm::vec3 &intersectionPoint)
 {
 	glm::vec3 L = position - r.startPosition;
 	float tca = glm::dot(L, r.direction);
-	if (tca < 0) 
-		return false;
+	if (tca < 0)
+		return nullptr;
 
-	float d2 = glm::dot(L, L) -tca * tca;
-	if (d2 > radius * radius) 
-		return false;
+	float d2 = glm::dot(L, L) - tca * tca;
+	if (d2 > radius * radius)
+		return nullptr;
+
 	float thc = sqrt(radius * radius - d2);
 	float t0 = tca - thc;
 	float t1 = tca + thc;
 
+	if (t0 > t1){
+		t0 = t1;
+		if (t0 < 0)
+			return nullptr;
+	}
+
+	// If the object is blocked
+	if (t0 > r.tMax)
+		return nullptr;
+	r.tMax = t0;
+
 	intersectionPoint = r.startPosition + t0 * r.direction;
-	return true;
+	return new Intersection(intersectionPoint, glm::normalize(intersectionPoint - position), color);
 }
