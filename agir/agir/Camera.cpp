@@ -73,7 +73,7 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 	else //check if the ray hits any object
 	{
 		glm::vec3 objectIntersectionPoint(0);
-		Intersection* closestInsersection = nullptr;
+		Intersection* closestIntersection = nullptr;
 
 		for (unsigned int j = 0; j < theWorld->objectList.size(); j++)
 		{
@@ -84,12 +84,12 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 
 			if (current != nullptr)
 			{
-				closestInsersection = current;
+				closestIntersection = current;
 			}
 		}
 
-		if (closestInsersection != nullptr)
-		p = closestInsersection->color;
+		if (closestIntersection != nullptr)
+			p = closestIntersection->color;
 	}
 
 	return p;
@@ -136,6 +136,6 @@ void Camera::render()
 	}
 
 	//save the image to a file
-	std::string fileName = "render.ppm";
+	std::string fileName = "a.ppm";
 	im.saveAsPPM(fileName.c_str());
 }

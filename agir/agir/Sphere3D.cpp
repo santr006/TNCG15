@@ -1,6 +1,6 @@
 #include "Sphere3D.h"
 
-Sphere3D::Sphere3D(glm::vec3 &pos, glm::vec2 &rot, float r, glm::vec3 col)
+Sphere3D::Sphere3D(glm::vec3 &pos, glm::vec3 &rot, float r, glm::vec3 col)
 {
 	position = pos;
 	rotation = rot;

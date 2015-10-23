@@ -1,7 +1,11 @@
 #include "Plane3D.h"
 
+Plane3D::Plane3D()
+{
 
-Plane3D::Plane3D(glm::vec3 pos, glm::vec2 rot, glm::vec2 dim, glm::vec3 col)
+}
+
+Plane3D::Plane3D(glm::vec3 pos, glm::vec3 rot, glm::vec2 dim, glm::vec3 col)
 {
 	position = pos;
 	rotation = rot;
@@ -33,14 +37,15 @@ Intersection* Plane3D::testRayIntersection(Ray &r, float step, glm::vec3 &inters
 
 	//translate and rotate to local coordinate system for the plane
 	glm::mat4 translation = glm::translate(glm::mat4(1.f), -position);
-	glm::mat4 rotat = glm::rotate(glm::rotate(glm::mat4(1.f), -rotation.x, glm::vec3(1, 0, 0)), -rotation.y, glm::vec3(0, 1, 0));
+	glm::mat4 translationBack = glm::translate(glm::mat4(1.f), position);
+	glm::mat4 rotat = glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.f), -rotation.x, glm::vec3(1, 0, 0)), -rotation.y, glm::vec3(0, 1, 0)), -rotation.z, glm::vec3(0, 0, 1));
 	glm::mat4 toLocal = rotat * translation;
 
-	glm::vec4 temp((-translation) * toLocal * glm::vec4(position + glm::vec3(-dimensions.x / 2, -dimensions.y / 2, 0), 1));
+	glm::vec4 temp(translationBack * toLocal * glm::vec4(position + glm::vec3(-dimensions.x / 2, -dimensions.y / 2, 0), 1));
 	glm::vec3 lowerLeftCorner(temp.x, temp.y, temp.z);
-	temp = glm::vec4((-translation) * toLocal * glm::vec4(position + glm::vec3(dimensions.x / 2, -dimensions.y / 2, 0), 1));
+	temp = glm::vec4(translationBack * toLocal * glm::vec4(position + glm::vec3(dimensions.x / 2, -dimensions.y / 2, 0), 1));
 	glm::vec3 lowerRightCorner(temp.x, temp.y, temp.z);
-	temp = glm::vec4((-translation) * toLocal * glm::vec4(position + glm::vec3(-dimensions.x / 2, dimensions.y / 2, 0), 1));
+	temp = glm::vec4(translationBack * toLocal * glm::vec4(position + glm::vec3(-dimensions.x / 2, dimensions.y / 2, 0), 1));
 	glm::vec3 upperLeftCorner(temp.x, temp.y, temp.z);
 
 	/*temp = glm::vec4(toLocal * glm::vec4(r.startPosition, 1));
@@ -61,7 +66,7 @@ Intersection* Plane3D::testRayIntersection(Ray &r, float step, glm::vec3 &inters
 	float DdotN = glm::dot(r.direction, planeNormal);
 	if (DdotN == 0){
 		//std::cout << "DdotN = 0 " << std::endl;
-		return false;
+		return nullptr;
 	}
 
 	//Find point inside plane -> position, which is the center of the plane
@@ -71,13 +76,13 @@ Intersection* Plane3D::testRayIntersection(Ray &r, float step, glm::vec3 &inters
 	//If t < 0 the plane is behind the ray origin and we aren't interested in it
 	if (t < 0){
 		//std::cout << "t < 0 " << std::endl;
-		return false;
+		return nullptr;
 	}
 
 	//Is B inside the surface bounds?
 	//Create vectors that decribe the bounds
 	//"Inside" is on the right side of the vector
-	temp = glm::vec4((-translation) * toLocal * glm::vec4(position + glm::vec3(dimensions.x / 2, dimensions.y / 2, 0), 1));
+	temp = glm::vec4(translationBack * toLocal * glm::vec4(position + glm::vec3(dimensions.x / 2, dimensions.y / 2, 0), 1));
 	glm::vec3 upperRightCorner(temp.x, temp.y, temp.z);
 	//std::cout << "upper right " << upperRightCorner.x << " " << upperRightCorner.y << " " << upperRightCorner.z << std::endl;
 
@@ -124,5 +129,5 @@ Intersection* Plane3D::testRayIntersection(Ray &r, float step, glm::vec3 &inters
 	}
 
 	//std::cout << "not inside bounds" << std::endl;
-	return false;
+	return nullptr;
 }

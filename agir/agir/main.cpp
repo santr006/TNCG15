@@ -8,7 +8,7 @@
 #include "Camera.h"
 #include "Box3D.h"
 #include "Object3D.h"
-//#include "Sphere3D.h"
+#include "Sphere3D.h"
 #include "Plane3D.h"
 
 using namespace std;
@@ -22,9 +22,9 @@ int main(int argc, char **argv)
 	BoundingBox* bboxToAdd;
 	Light* lightToAdd;
 
-	objectToAdd = new Plane3D(glm::vec3(0.f, 0.f, -1.5f), glm::vec2(0.5f, 0.5f), glm::vec2(1.f), glm::vec3(0.f, 1.f, 0.f));
-	world.objectList.push_back(objectToAdd);
-	objectToAdd = new Plane3D(glm::vec3(0.f, 0.f, -1.8f), glm::vec2(0.0f, 0.0f), glm::vec2(1.f), glm::vec3(1.f, 0.f, 0.f));
+	//objectToAdd = new Plane3D(glm::vec3(0.f, 0.f, -1.5f), glm::vec2(0.5f, 0.5f), glm::vec2(1.f), glm::vec3(0.f, 1.f, 0.f));
+	//world.objectList.push_back(objectToAdd);
+	objectToAdd = new Box3D(glm::vec3(0.f, 0.f, -2.f), glm::vec3(-0.4f, -0.6f, 0.f), glm::vec3(1.f), glm::vec3(1.f, 0.f, 0.f));
 	world.objectList.push_back(objectToAdd);
 
 
