@@ -12,6 +12,9 @@
 #include "Image.h"
 #include "Ray.h"
 #include "World.h"
+#include "Object3D.h"
+
+#include <cmath>
 
 //the distance between two pixels in world coordinates
 const float STEP_BETWEEN_PIXELS = 0.005f;
@@ -29,6 +32,9 @@ public:
 	//creates a ray from the position pos in the direction dir
 	//and returns the color the path of the ray defines
 	glm::vec3 generateRay(glm::vec3 pos, glm::vec3 dir);
+
+	glm::vec3 calcRandomReflectionDir(glm::vec3 surfaceNormal);
+	bool shouldRayContinue();
 
 	World* theWorld; // pointer to the world that will be rendered
 	glm::vec3 position; //position of the observer

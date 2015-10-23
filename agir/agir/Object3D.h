@@ -6,6 +6,8 @@
 #include "Ray.h"
 #include "Intersection.h"
 
+const float PI = 3.14159265359f;
+
 class Object3D
 {
 public:

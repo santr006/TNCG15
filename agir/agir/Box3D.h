@@ -2,8 +2,6 @@
 #include "Object3D.h"
 #include "Plane3D.h"
 
-#include <gtc/constants.hpp>
-
 class Box3D : public Object3D
 {
 public:

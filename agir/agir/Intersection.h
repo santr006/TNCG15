@@ -6,6 +6,7 @@ struct Intersection{
 	Intersection(glm::vec3 p, glm::vec3 sf, glm::vec3 c) : point(p), surfaceNormal(sf), color(c){}
 
 	// data members
-	glm::vec3 point, surfaceNormal;
+	glm::vec3 point;
+	glm::vec3 surfaceNormal;
 	glm::vec3 color;
 };

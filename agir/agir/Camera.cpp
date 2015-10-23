@@ -84,7 +84,17 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 		}
 
 		if (closestIntersection != nullptr)
-			p = closestIntersection->color;
+		{
+			if (shouldRayContinue())
+			{
+				glm::vec3 newDir = calcRandomReflectionDir(closestIntersection->surfaceNormal);
+				p = generateRay(closestIntersection->point, newDir);
+				/*p += generateRay(closestIntersection->point, newDir);
+				p += generateRay(closestIntersection->point, newDir);
+				p += generateRay(closestIntersection->point, newDir);*/
+			}
+			p += closestIntersection->color;
+		}
 	}
 
 	return p;
@@ -133,4 +143,66 @@ void Camera::render()
 	//save the image to a file
 	std::string fileName = "a.ppm";
 	im.saveAsPPM(fileName.c_str());
+}
+
+glm::vec3 Camera::calcRandomReflectionDir(glm::vec3 sufaceNormal)
+{
+	//A probailtiy distribution function p(x) returns how likely it is that a value x will happen [0,1]
+	//A cumulative distribution function F(x) returns how likely it is that a value less or equal to x will happen [0,1]
+	//The curve F will rise quickly at the more important x values and stay around the same value for unimportant x values
+	//If y = F(x) then x = F^-1(y)
+	//If we choose some y with the same step between them we will most likely get x values where the curve rises
+	//which is also very likely x values
+
+	//The x will be the incoming direction of the light
+	//If we randomize y we will get a very likely x/direction back
+
+	//theta is rotation around x and phi is rotation around y
+	//p(theta, phi) = pi^-1 * cos(theta) 
+	//F(theta, phi) = pi^-1 * integral 0 to phi (dPhi) * integral 0 to theta (cos(theta)sin(theta)*dTheta) = phi / 2pi * (1 - cos^2(theta))
+	//We split F into 2 parts and reverse them to get the values for theta and phi
+	//Ftheta = 1 - cos^2(theta) => theta = cos^-1(sqrt(1 - Ftheta))
+	//Fphi = phi / 2pi => phi = 2 * pi * Fphi
+
+	//Get theta and phi
+	float random = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+	float theta = glm::acos(glm::sqrt(random));
+	random = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+	float phi = 2 * PI * random;
+
+	//create direction vector and rotate it asuming (0, 1, 0) is the normal
+	glm::mat4 rotTheta = glm::rotate(glm::mat4(1.f), theta, glm::vec3(1, 0, 0)); //around x
+	glm::mat4 rotPhi = glm::rotate(glm::mat4(1.f), phi, glm::vec3(0, 1, 0)); // around y
+	glm::vec4 direction4(0, 1, 0, 1); //start at the normal
+	direction4 = rotPhi * rotTheta * direction4;
+
+	//rotate the vector so the direction becomes correct using the real normal
+	//we want to find the theta and phi that will rotate our normal to the real normal
+	//and use them to rotate the direction vector
+	//we use Pythagora's
+
+	//Find theta and phi
+	float hyp = glm::sqrt(sufaceNormal.z * sufaceNormal.z + sufaceNormal.x * sufaceNormal.x);
+	phi = glm::asin(sufaceNormal.x / hyp);
+	theta = glm::asin(hyp / glm::length(sufaceNormal)); //always gives positive angle [0,pi]
+	if (sufaceNormal.y < 0) //if y is negative the angle should be larger
+		theta = 180 - theta;
+	if (sufaceNormal.z < 0) //if z is negative the angle should be negative
+		theta = -theta;
+
+	//rotate
+	rotTheta = glm::rotate(glm::mat4(1.f), theta, glm::vec3(1, 0, 0)); //around x
+	rotPhi = glm::rotate(glm::mat4(1.f), phi, glm::vec3(0, 1, 0)); // around y
+	direction4 = rotPhi * rotTheta * direction4;
+
+	return glm::vec3(direction4.x, direction4.y, direction4.z);
+
+}
+
+bool Camera::shouldRayContinue()
+{
+	//should be russian roulette later
+	if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < 0.5f)
+		return true;
+	return false;
 }
