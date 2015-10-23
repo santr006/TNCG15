@@ -10,10 +10,7 @@ public:
 	Box3D(glm::vec3 pos, glm::vec3 rot, glm::vec3 dim, glm::vec3 col);
 	~Box3D();
 
-	Intersection* testRayIntersection(Ray &r, float step, glm::vec3 &intersectionPoint);
-
-	bool axisAlignedPlaneIntersect(Ray r, float step, glm::vec3 &intersectionPoint, glm::vec3 normalAxis);
-	glm::vec3 getNormalForSide(int side);
+	Intersection* testRayIntersection(Ray &r);
 
 	glm::vec3 dimensions;
 	Plane3D front;

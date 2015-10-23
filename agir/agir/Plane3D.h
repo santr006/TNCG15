@@ -9,7 +9,7 @@ public:
 	Plane3D(glm::vec3 pos, glm::vec3 rot, glm::vec2 dim, glm::vec3 col);
 	~Plane3D();
 
-	Intersection* testRayIntersection(Ray &r, float step, glm::vec3 &intersectionPoint);
+	Intersection* testRayIntersection(Ray &r);
 
 	glm::vec2 dimensions;
 };

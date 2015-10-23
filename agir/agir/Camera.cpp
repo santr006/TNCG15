@@ -10,7 +10,6 @@ Camera::Camera(World* w)
 	farPlane = 2;
 	widthInPixels = 1;
 	heightInPixels = 1;
-	iterationStep = 0.1f;
 }
 
 Camera::Camera(World* w, int width, int height)
@@ -23,7 +22,6 @@ Camera::Camera(World* w, int width, int height)
 	farPlane = 2;
 	widthInPixels = width;
 	heightInPixels = height;
-	iterationStep = 0.1f;
 }
 
 Camera::~Camera(){}
@@ -49,7 +47,7 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 		for (unsigned int i = 0; i < theWorld->BBoxList.size(); i++)
 		{
 			glm::vec3 boxIntersectionPoint;
-			glm::vec3 objectIntersectionPoint;
+			float iterationStep = 0.1f;
 
 			//if it did check the objects inside it
 			if (theWorld->BBoxList.at(i)->intersects(r, iterationStep, boxIntersectionPoint))
@@ -61,7 +59,7 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 				for (unsigned int j = 0; j < theWorld->BBoxList.at(i)->objects.size(); j++)
 				{
 					//if it did the color will be white, if not the color is still black
-					if (theWorld->BBoxList.at(i)->objects.at(j)->testRayIntersection(newRay, iterationStep, objectIntersectionPoint))
+					if (theWorld->BBoxList.at(i)->objects.at(j)->testRayIntersection(newRay))
 					{
 						p = glm::vec3(1.f, 1.f, 1.f); //std::cout << "hit" << std::endl;
 					}
@@ -72,15 +70,12 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 	}
 	else //check if the ray hits any object
 	{
-		glm::vec3 objectIntersectionPoint(0);
 		Intersection* closestIntersection = nullptr;
 
 		for (unsigned int j = 0; j < theWorld->objectList.size(); j++)
 		{
-			// A new dawn.
-
 			Intersection* current = nullptr;
-			current = theWorld->objectList.at(j)->testRayIntersection(r, iterationStep, objectIntersectionPoint);
+			current = theWorld->objectList.at(j)->testRayIntersection(r);
 
 			if (current != nullptr)
 			{

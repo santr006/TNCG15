@@ -38,5 +38,4 @@ public:
 	float farPlane; //the distance from the camera in the forward direction to the far cutting plane
 	unsigned int widthInPixels; //the number of pixels left to right in the image that will be rendered
 	unsigned int heightInPixels; //the number of pixels up to down in the image that will be rendered
-	float iterationStep; //the step taken along a ray when searching for an intersection
 };
