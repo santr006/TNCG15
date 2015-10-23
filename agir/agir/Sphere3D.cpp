@@ -40,5 +40,6 @@ Intersection* Sphere3D::testRayIntersection(Ray& r, float step, glm::vec3 &inter
 	r.tMax = t0;
 
 	intersectionPoint = r.startPosition + t0 * r.direction;
-	return new Intersection(intersectionPoint, glm::normalize(intersectionPoint - position), color);
+//	return new Intersection(intersectionPoint, glm::normalize(position - intersectionPoint), color); // as it should be (?)
+	return new Intersection(intersectionPoint, glm::normalize(intersectionPoint - position), color); // flip'd direction
 }

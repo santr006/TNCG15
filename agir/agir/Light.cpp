@@ -1,10 +1,9 @@
 #include "Light.h"
 
-Light::Light(glm::vec3 pos, glm::vec3 col, float i)
+Light::Light(glm::vec3 pos, glm::vec3 col)
 {
 	position = pos;
-	color = col;
-	intensity = i;
+	intensity = col;
 }
 
 Light::~Light()

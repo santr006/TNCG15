@@ -37,8 +37,6 @@ void Image::saveAsPPM(const char *filename)
 
 		float* currentPixel = pixelValues;
 
-
-
 		// loop over each pixel in the image, clamp from 0 to 255, convert to char format and write to file. 
 
 		for (unsigned int h = 0; h < height; ++h){

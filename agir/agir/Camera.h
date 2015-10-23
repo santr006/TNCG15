@@ -9,6 +9,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include "Image.h"
 #include "Ray.h"
 #include "World.h"
@@ -29,6 +30,8 @@ public:
 	//creates a ray from the position pos in the direction dir
 	//and returns the color the path of the ray defines
 	glm::vec3 generateRay(glm::vec3 pos, glm::vec3 dir);
+	glm::vec3 generateShadowRay(Intersection* i);
+	glm::vec3 phongShading(Object3D* o, Light* l,Intersection* i);
 
 	World* theWorld; // pointer to the world that will be rendered
 	glm::vec3 position; //position of the observer

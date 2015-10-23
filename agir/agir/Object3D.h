@@ -19,7 +19,9 @@ public:
 	glm::vec2 rotation; //rotation round x-axis and rotation round y-axis
 
 	glm::vec3 color;  // to be replaced with material?
-				// TODO: BRDF with material properties
-
+				
+	
+	// TODO: BRDF with material properties
+	float ka = 0.f, kd = 0.9f, ks = 0.3f, roughness = 2;
 };
 
