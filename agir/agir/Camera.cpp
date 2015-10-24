@@ -200,13 +200,13 @@ glm::vec3 Camera::calcRandomReflectionDir(glm::vec3 sufaceNormal, float probabil
 
 	//We need to determine if the ray should continue of end at this surface
 	//We do this with Russian roulette
-	//The function F can give results [-pi,pi]
-	//We will rescale the function and make that span smaller by dividing our theta with a value P [0, 1]
-	//If theta then becomes larger than pi or smaller than -pi the ray doesn't continue
+	//The function F can give results [0,1]
+	//We will rescale the function and make that span smaller by dividing our phi with a value P [0, 1]
+	//If phi then becomes larger than 2 pi the ray doesn't continue
 	//We decided P to be the variable probabilityOfSuccess sent into the function
 	//P = 0.1 means 1/10 chance that a ray will be reflected. When a ray get's reflected it will have a 10 times higher importance
-	theta = theta / probabilityOfSuccess;
-	if (theta > PI || theta < -PI)
+	phi = phi / probabilityOfSuccess;
+	if (phi > 2*PI)
 	{
 		//std::cout << "died " << theta << std::endl;
 		return glm::vec3(0, 0, 0);
@@ -226,12 +226,21 @@ glm::vec3 Camera::calcRandomReflectionDir(glm::vec3 sufaceNormal, float probabil
 
 	//Find theta and phi
 	float hyp = glm::sqrt(sufaceNormal.z * sufaceNormal.z + sufaceNormal.x * sufaceNormal.x);
-	phi = glm::asin(sufaceNormal.x / hyp);
-	theta = glm::asin(hyp / glm::length(sufaceNormal)); //always gives positive angle [0,pi]
-	if (sufaceNormal.y < 0) //if y is negative the angle should be larger
-		theta = 180 - theta;
-	if (sufaceNormal.z < 0) //if z is negative the angle should be negative
-		theta = -theta;
+	phi = glm::asin(glm::abs(sufaceNormal.x) / hyp);
+	if (sufaceNormal.x > 0)
+	{
+		if (sufaceNormal.z < 0)
+			phi = PI + phi;
+		else
+			phi = 2 * PI - phi;
+	}
+	else
+	{
+		if (sufaceNormal.z < 0)
+			phi = PI - phi;
+	}
+
+	theta = glm::asin(hyp / glm::length(sufaceNormal)); //always gives positive angle [0,pi/2]
 
 	//rotate
 	rotTheta = glm::rotate(glm::mat4(1.f), theta, glm::vec3(1, 0, 0)); //around x
