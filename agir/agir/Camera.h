@@ -36,7 +36,7 @@ public:
 	//calculates a new direction for a ray that hit a surface
 	//determines with Russian roulette if the ray should continue
 	//returns no directoin = (0, 0, 0) if the ray shouldn't continue
-	glm::vec3 calcRandomReflectionDir(glm::vec3 surfaceNormal);
+	glm::vec3 calcRandomReflectionDir(glm::vec3 surfaceNormal, float probabilityOfSuccess);
 
 	World* theWorld; // pointer to the world that will be rendered
 	glm::vec3 position; //position of the observer

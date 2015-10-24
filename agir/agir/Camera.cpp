@@ -92,11 +92,13 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 			//fr comes from the BRDF (can ba a constant)
 			//L(x <- Win) needs to be calculated by sending a ray in the direction Win
 			//and find the intensity of the point it hits
+			//but only if the ray shouldn't be terminated
 			glm::vec3 incomingIntensity(0, 0, 0);
 
 			//Should we send a new ray in a random direction
 			//or end the path here and send shadow rays to the light sources to see if the point is lit?
-			glm::vec3 newDir = calcRandomReflectionDir(closestIntersection->surfaceNormal);
+			float probabilityToContinue = 0.1f;
+			glm::vec3 newDir = calcRandomReflectionDir(closestIntersection->surfaceNormal, probabilityToContinue);
 			//returns (0, 0, 0) if the ray shouldn't continue
 			//determined by Russian roulette
 
@@ -116,7 +118,9 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 			}
 			//temp definition of BRDF untill we fully understand it
 			float fr = 0.8f;
-			p = PI * fr * incomingIntensity;
+
+			//the division by probabilityToContinue is added because of Russian roulette in clacRandomReflectionDir
+			p = PI / probabilityToContinue * fr * incomingIntensity;
 			//p = closestIntersection->color;
 		}
 	}
@@ -169,7 +173,7 @@ void Camera::render()
 	im.saveAsPPM(fileName.c_str());
 }
 
-glm::vec3 Camera::calcRandomReflectionDir(glm::vec3 sufaceNormal)
+glm::vec3 Camera::calcRandomReflectionDir(glm::vec3 sufaceNormal, float probabilityOfSuccess)
 {
 	//A probailtiy distribution function p(x) returns how likely it is that a value x will happen [0,1]
 	//A cumulative distribution function F(x) returns how likely it is that a value less or equal to x will happen [0,1]
@@ -199,9 +203,9 @@ glm::vec3 Camera::calcRandomReflectionDir(glm::vec3 sufaceNormal)
 	//The function F can give results [-pi,pi]
 	//We will rescale the function and make that span smaller by dividing our theta with a value P [0, 1]
 	//If theta then becomes larger than pi or smaller than -pi the ray doesn't continue
-	//We decide P
-	float P = 0.1f; //1/10 chance that a ray will be reflected. When a ray get's reflected it will have a 10 times higher importance
-	theta = theta / P;
+	//We decided P to be the variable probabilityOfSuccess sent into the function
+	//P = 0.1 means 1/10 chance that a ray will be reflected. When a ray get's reflected it will have a 10 times higher importance
+	theta = theta / probabilityOfSuccess;
 	if (theta > PI || theta < -PI)
 	{
 		//std::cout << "died " << theta << std::endl;
