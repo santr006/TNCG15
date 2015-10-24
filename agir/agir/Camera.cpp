@@ -72,6 +72,7 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 	{
 		Intersection* closestIntersection = nullptr;
 
+		//find the closest intersection point
 		for (unsigned int j = 0; j < theWorld->objectList.size(); j++)
 		{
 			Intersection* current = nullptr;
@@ -83,17 +84,40 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 			}
 		}
 
+		//if an intersection was found
 		if (closestIntersection != nullptr)
 		{
-			if (shouldRayContinue())
+			//Find the intensity (L) for this point
+			//L(x -> out) = pi * fr(x, Win, Wout) * L(x <- Win)
+			//fr comes from the BRDF (can ba a constant)
+			//L(x <- Win) needs to be calculated by sending a ray in the direction Win
+			//and find the intensity of the point it hits
+			glm::vec3 incomingIntensity(0, 0, 0);
+
+			//Should we send a new ray in a random direction
+			//or end the path here and send shadow rays to the light sources to see if the point is lit?
+			glm::vec3 newDir = calcRandomReflectionDir(closestIntersection->surfaceNormal);
+			//returns (0, 0, 0) if the ray shouldn't continue
+			//determined by Russian roulette
+
+			if (newDir.x != 0 || newDir.y != 0 || newDir.z != 0) //a direction can't be 0
 			{
-				glm::vec3 newDir = calcRandomReflectionDir(closestIntersection->surfaceNormal);
-				p = generateRay(closestIntersection->point, newDir);
-				/*p += generateRay(closestIntersection->point, newDir);
-				p += generateRay(closestIntersection->point, newDir);
-				p += generateRay(closestIntersection->point, newDir);*/
+				//send a ray in the random direction newDir
+				//std::cout << "bounce" << std::endl;
+				incomingIntensity = generateRay(closestIntersection->point, newDir);
+				if (incomingIntensity == glm::vec3(0.f))
+					//send shadow rays
+					incomingIntensity = closestIntersection->color;
 			}
-			p += closestIntersection->color;
+			else
+			{
+				//Send shadow rays
+				incomingIntensity = closestIntersection->color;
+			}
+			//temp definition of BRDF untill we fully understand it
+			float fr = 0.8f;
+			p = PI * fr * incomingIntensity;
+			//p = closestIntersection->color;
 		}
 	}
 
@@ -170,6 +194,21 @@ glm::vec3 Camera::calcRandomReflectionDir(glm::vec3 sufaceNormal)
 	random = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 	float phi = 2 * PI * random;
 
+	//We need to determine if the ray should continue of end at this surface
+	//We do this with Russian roulette
+	//The function F can give results [-pi,pi]
+	//We will rescale the function and make that span smaller by dividing our theta with a value P [0, 1]
+	//If theta then becomes larger than pi or smaller than -pi the ray doesn't continue
+	//We decide P
+	float P = 0.1f; //1/10 chance that a ray will be reflected. When a ray get's reflected it will have a 10 times higher importance
+	theta = theta / P;
+	if (theta > PI || theta < -PI)
+	{
+		//std::cout << "died " << theta << std::endl;
+		return glm::vec3(0, 0, 0);
+	}
+	//std::cout << "survived" << std::endl;
+
 	//create direction vector and rotate it asuming (0, 1, 0) is the normal
 	glm::mat4 rotTheta = glm::rotate(glm::mat4(1.f), theta, glm::vec3(1, 0, 0)); //around x
 	glm::mat4 rotPhi = glm::rotate(glm::mat4(1.f), phi, glm::vec3(0, 1, 0)); // around y
@@ -197,12 +236,4 @@ glm::vec3 Camera::calcRandomReflectionDir(glm::vec3 sufaceNormal)
 
 	return glm::vec3(direction4.x, direction4.y, direction4.z);
 
-}
-
-bool Camera::shouldRayContinue()
-{
-	//should be russian roulette later
-	if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < 0.5f)
-		return true;
-	return false;
 }
