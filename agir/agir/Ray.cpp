@@ -7,7 +7,4 @@ Ray::Ray(glm::vec3 pos, glm::vec3 dir, float _tMin)
 	tMin = _tMin;
 }
 
-Ray::~Ray()
-{
-
-}
+Ray::~Ray() {}

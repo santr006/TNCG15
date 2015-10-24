@@ -8,5 +8,5 @@ struct Intersection{
 	// data members
 	glm::vec3 point;
 	glm::vec3 surfaceNormal;
-	glm::vec3 color;
+	glm::vec3 color; 
 };

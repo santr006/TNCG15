@@ -9,6 +9,7 @@
 const float PI = 3.14159265359f;
 const float EPSILON = 0.00001;
 
+
 class Object3D
 {
 public:

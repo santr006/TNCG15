@@ -66,7 +66,6 @@ int main(int argc, char **argv)
 	std::cout << "Render time: " << renderTime << " s." << std::endl;
 
 	// return to OS
-
 	system("pause");
 	return 0;
 }

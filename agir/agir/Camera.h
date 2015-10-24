@@ -28,7 +28,7 @@ public:
 	~Camera();
 	
 	//uses ray tracing to find a color for every pixel
-	void render();	
+	void render();
 
 	//creates a ray from the position pos in the direction dir
 	//and returns the color the path of the ray defines

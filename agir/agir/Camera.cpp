@@ -93,6 +93,7 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 
 glm::vec3 Camera::generateShadowRay(Intersection* i)
 {
+
 	glm::vec3 dirToLight;
 
 	Light* currentLight;
