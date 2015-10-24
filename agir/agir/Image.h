@@ -15,6 +15,8 @@ public:
 	void fillImage(glm::vec3 &color); // mostly used for testing
 	void saveAsPPM(const char *filename);
 
+	float floatTo255(float f);
+
 private:
 
 	float *pixelValues;

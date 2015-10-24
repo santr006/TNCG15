@@ -6,6 +6,4 @@ Light::Light(glm::vec3 pos, glm::vec3 col)
 	intensity = col;
 }
 
-Light::~Light()
-{
-}
+Light::~Light(){}

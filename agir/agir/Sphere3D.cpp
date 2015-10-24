@@ -1,6 +1,6 @@
 #include "Sphere3D.h"
 
-Sphere3D::Sphere3D(glm::vec3 &pos, glm::vec2 &rot, float r, glm::vec3 col)
+Sphere3D::Sphere3D(glm::vec3 &pos, glm::vec3 &rot, float r, glm::vec3 col)
 {
 	position = pos;
 	rotation = rot;
@@ -13,7 +13,7 @@ Sphere3D::~Sphere3D()
 	// so long sphere!
 }
 
-Intersection* Sphere3D::testRayIntersection(Ray& r, float step, glm::vec3 &intersectionPoint)
+Intersection* Sphere3D::testRayIntersection(Ray& r)
 {
 	glm::vec3 L = position - r.startPosition;
 	float tca = glm::dot(L, r.direction);
@@ -35,11 +35,10 @@ Intersection* Sphere3D::testRayIntersection(Ray& r, float step, glm::vec3 &inter
 	}
 
 	// If the object is blocked
-	if (t0 > r.tMax)
+	if (t0 > r.tMin)
 		return nullptr;
-	r.tMax = t0;
+	r.tMin = t0;
 
-	intersectionPoint = r.startPosition + t0 * r.direction;
-//	return new Intersection(intersectionPoint, glm::normalize(position - intersectionPoint), color); // as it should be (?)
-	return new Intersection(intersectionPoint, glm::normalize(intersectionPoint - position), color); // flip'd direction
+	glm::vec3 intersectionPoint(r.startPosition + t0 * r.direction);
+	return new Intersection(intersectionPoint, glm::normalize(intersectionPoint - position), color);
 }

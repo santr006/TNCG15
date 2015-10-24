@@ -2,45 +2,68 @@
 #include <stdarg.h>
 #include <math.h>
 #include <iomanip>
+#include <time.h>
 
 #include "Image.h"
 #include "Camera.h"
 #include "Box3D.h"
 #include "Object3D.h"
 #include "Sphere3D.h"
+#include "Plane3D.h"
 
 using namespace std;
 
 int main(int argc, char **argv)
 {
 	World world;
-	int width = 1280, height = 720;
+	int width = 1, height = 1;
 
 	Object3D* objectToAdd;
 	BoundingBox* bboxToAdd;
 	Light* lightToAdd;
 
-	// Add geometry to the world
+	// colors
+	glm::vec3 colorWall(0.8f);
 
-	objectToAdd = new Sphere3D(glm::vec3(0.f, 0.f, -1.5f), glm::vec2(0.0f, 0.0f), 0.3f, glm::vec3(1.f, 0.f, 0.f));
-	world.objectList.push_back(objectToAdd);
-	objectToAdd = new Sphere3D(glm::vec3(1.f, 1.f, -2.f), glm::vec2(0.0f, 0.0f), 0.1f, glm::vec3(0.f, 1.f, 0.f));
-	world.objectList.push_back(objectToAdd);
-	objectToAdd = new Sphere3D(glm::vec3(1.f, 2.f, 9.8f), glm::vec2(0.0f, 0.0f), 0.9f, glm::vec3(0.f, 1.f, 0.f));
+	// Add objects to the world
+
+	//back
+	objectToAdd = new Plane3D(glm::vec3(0.f, 0.f, -2.5f), glm::vec3(0.f), glm::vec2(1.f), glm::vec3(1.f));
 	world.objectList.push_back(objectToAdd);
 
-	//objectToAdd = new Sphere3D(glm::vec3(0.5f, 0.3f, -3.f), glm::vec2(0.0f, 0.0f), 1.f, glm::vec3(0.f, 0.f, 1.f));
+	//objectToAdd = new Sphere3D(glm::vec3(0.f, 0.6f, -1.5f), glm::vec3(0.f), 0.3f, glm::vec3(1.f,0.f,0.f));
 	//world.objectList.push_back(objectToAdd);
+
+
+/*	//right
+	objectToAdd = new Plane3D(glm::vec3(0.5f, 0.f, -2.f), glm::vec3(0.f,PI/2, 0.f), glm::vec2(1.f), glm::vec3(1.f));
+	world.objectList.push_back(objectToAdd);
+	//left
+	objectToAdd = new Plane3D(glm::vec3(-0.5f, 0.f, -2.f), glm::vec3(0.f, PI / 2, 0.f), glm::vec2(1.f), glm::vec3(1.f));
+	world.objectList.push_back(objectToAdd);
+	//upper
+	objectToAdd = new Plane3D(glm::vec3(0.f, 0.5f, -2.f), glm::vec3(PI / 2,0.f , 0.f), glm::vec2(1.f), glm::vec3(1.f));
+	world.objectList.push_back(objectToAdd);
+	//lower
+	objectToAdd = new Plane3D(glm::vec3(0.f, -0.5f, -2.f), glm::vec3(PI / 2, 0.f, 0.f), glm::vec2(1.f), glm::vec3(1.f));
+	world.objectList.push_back(objectToAdd);
+
+	*/
 
 	// Add lights to the world
 
-	lightToAdd = new Light(glm::vec3(1.f,2.f,10.f), glm::vec3(1.f));
+	lightToAdd = new Light(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f));
 	world.lightList.push_back(lightToAdd);
 
 	// Add a camera to the world
 
 	Camera cam(&world, width, height); // create a camera with default constructor -> at (0,0,0)
+	time_t start = time(0);
 	cam.render();
+
+	double renderTime = difftime(time(0), start);
+
+	std::cout << "Render time: " << renderTime << " s." << std::endl;
 
 	// return to OS
 

@@ -10,7 +10,6 @@ Camera::Camera(World* w)
 	farPlane = 2;
 	widthInPixels = 1;
 	heightInPixels = 1;
-	iterationStep = 0.1f;
 }
 
 Camera::Camera(World* w, int width, int height)
@@ -23,7 +22,6 @@ Camera::Camera(World* w, int width, int height)
 	farPlane = 2;
 	widthInPixels = width;
 	heightInPixels = height;
-	iterationStep = 0.1f;
 }
 
 Camera::~Camera(){}
@@ -49,7 +47,7 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 		for (unsigned int i = 0; i < theWorld->BBoxList.size(); i++)
 		{
 			glm::vec3 boxIntersectionPoint;
-			glm::vec3 objectIntersectionPoint;
+			float iterationStep = 0.1f;
 
 			//if it did check the objects inside it
 			if (theWorld->BBoxList.at(i)->intersects(r, iterationStep, boxIntersectionPoint))
@@ -61,7 +59,7 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 				for (unsigned int j = 0; j < theWorld->BBoxList.at(i)->objects.size(); j++)
 				{
 					//if it did the color will be white, if not the color is still black
-					if (theWorld->BBoxList.at(i)->objects.at(j)->testRayIntersection(newRay, iterationStep, objectIntersectionPoint))
+					if (theWorld->BBoxList.at(i)->objects.at(j)->testRayIntersection(newRay))
 					{
 						result = glm::vec3(1.f, 1.f, 1.f); //std::cout << "hit" << std::endl;
 					}
@@ -72,25 +70,22 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 	}
 	else //check if the ray hits any object
 	{
-		glm::vec3 objectIntersectionPoint(0);
-		Intersection* closestInsersection = nullptr;
+		Intersection* closestIntersection = nullptr;
 
 		for (unsigned int o = 0; o < theWorld->objectList.size(); o++)
 		{
-			// A new dawn.
-			Intersection* current;
-			current = theWorld->objectList.at(o)->testRayIntersection(r, iterationStep, objectIntersectionPoint);
-			// nullptr is returned if t is larger than the ray's tMax
+			Intersection* current = nullptr;
+			current = theWorld->objectList.at(o)->testRayIntersection(r);
 
 			if (current != nullptr)
 			{
-				closestInsersection = current;
+				closestIntersection = current;
 			}
 		}
 
-		if (closestInsersection != nullptr){
-			// result = closestInsersection->color;
-			result = generateShadowRay(closestInsersection);
+		if (closestIntersection != nullptr){
+			//result = closestIntersection->color;
+			result = generateShadowRay(closestIntersection);
 		}
 	}
 	return result;
@@ -103,35 +98,59 @@ glm::vec3 Camera::generateShadowRay(Intersection* i)
 	Light* currentLight;
 	Object3D* currentObject;
 
-	bool isObscured;
+	bool isObscured = false;
 
 	float localIllumination;
 	glm::vec3 resultColor(0.f, 0.f, 0.f);
 
-	// Temporary variables. To be removed later, pendejo!
-	float stepSize = 0.f;
-	glm::vec3 intersectionPoint(0.f);
-
+	// for all light sources
 	for (int l = 0; l < theWorld->lightList.size(); l++)
 	{
+		//get current light source
 		currentLight = theWorld->lightList.at(l);
+		//get direction to it
 		dirToLight = glm::normalize(currentLight->position - i->point);
 
-		Ray shadowRay(i->point, dirToLight, 0.1f, glm::length(dirToLight));
+		//create a ray
+		Ray shadowRay(i->point, dirToLight, 0.1f);
+		std::cout << "shadow ray pos: " << i->point.x << " " << i->point.y << " " << i->point.z << ", dir: "
+			<< dirToLight.x << " " << dirToLight.y << " " << dirToLight.z << std::endl;
+		//variable for obscuring object
 		Intersection* obscuringIntersection = nullptr;
 
+		//create variable to keep track if obscured
 		isObscured = false;
 
 		// go through all objects in the scene
 		for (int o = 0; o < theWorld->objectList.size(); o++)
 		{
+			//get the object
 			currentObject = theWorld->objectList.at(o);
-			obscuringIntersection = currentObject->testRayIntersection(shadowRay, stepSize, intersectionPoint);
+			//check if the ray intersects the object
+			//returns nullpoiter if the object wasn't hit
+			obscuringIntersection = currentObject->testRayIntersection(shadowRay);
+			//std::cout << "point " << obscuringIntersection->point.x << " " << obscuringIntersection->point.y << " " << obscuringIntersection->point.z << std::endl;
+			std::cout << "hit object after " << shadowRay.tMin << std::endl;
 
 			// if object is hit between surface point and the light source
 			if (obscuringIntersection != nullptr){
 				isObscured = true;
-				//resultColor = in->color
+
+				//if (shouldRayContinue())
+				//{
+				//	glm::vec3 newDir = calcRandomReflectionDir(obscuringIntersection->surfaceNormal);
+				//	resultColor = generateRay(obscuringIntersection->point, newDir);
+				//	//	p += generateRay(closestIntersection->point, newDir);
+				//	//	p += generateRay(closestIntersection->point, newDir);
+				//	//	p += generateRay(closestIntersection->point, newDir);
+				//}
+
+				//resultColor += obscuringIntersection->color;
+
+				// should check all light sources [!!!]
+
+				std::cout << "object is obscuring light source\n";
+				return resultColor;
 			}
 		}
 
@@ -139,28 +158,14 @@ glm::vec3 Camera::generateShadowRay(Intersection* i)
 		if (!isObscured)
 		{
 			// calculate the light locally
+			//localIllumination = std::max(0.f, glm::dot(i->surfaceNormal, shadowRay.direction)); // diffuse reflection factor
+			//resultColor = resultColor + i->color*(currentLight->intensity*localIllumination);
 
-			localIllumination = std::max(0.f, glm::dot(i->surfaceNormal, shadowRay.direction)); // diffuse reflection factor
-			//std::cout << glm::dot(i->surfaceNormal, shadowRay.direction) << std::endl;
-			resultColor = resultColor + i->color*(currentLight->intensity*localIllumination);
-
-			//resultColor = resultColor + glm::vec3(0.1f, 0.1f, 0.1f);
-			// dumb ambient
-			//system("pause");
-
-			//std::cout << resultColor.r << " " << resultColor.g << " " << resultColor.b << std::endl;
+			std::cout << "calculating local light\n";
+			resultColor = i->color;
 		}
 	}
 	return resultColor;
-}
-
-glm::vec3 Camera::phongShading(Object3D* o, Light* l, Intersection* i)
-{
-	/*
-	glm::vec3 ambient = glm::vec3(o->ka) * l->intensity;
-	glm::vec3 diffuse = glm::vec3(o->kd) * glm::dot(L,N) * o->col
-	*/
-	return glm::vec3(0.f);
 }
 
 //uses ray tracing to find a color for every pixel
@@ -201,6 +206,67 @@ void Camera::render()
 	}
 
 	//save the image to a file
-	std::string fileName = "render.ppm";
+	std::string fileName = "a.ppm";
 	im.saveAsPPM(fileName.c_str());
+}
+
+glm::vec3 Camera::calcRandomReflectionDir(glm::vec3 sufaceNormal)
+{
+	//A probailtiy distribution function p(x) returns how likely it is that a value x will happen [0,1]
+	//A cumulative distribution function F(x) returns how likely it is that a value less or equal to x will happen [0,1]
+	//The curve F will rise quickly at the more important x values and stay around the same value for unimportant x values
+	//If y = F(x) then x = F^-1(y)
+	//If we choose some y with the same step between them we will most likely get x values where the curve rises
+	//which is also very likely x values
+
+	//The x will be the incoming direction of the light
+	//If we randomize y we will get a very likely x/direction back
+
+	//theta is rotation around x and phi is rotation around y
+	//p(theta, phi) = pi^-1 * cos(theta) 
+	//F(theta, phi) = pi^-1 * integral 0 to phi (dPhi) * integral 0 to theta (cos(theta)sin(theta)*dTheta) = phi / 2pi * (1 - cos^2(theta))
+	//We split F into 2 parts and reverse them to get the values for theta and phi
+	//Ftheta = 1 - cos^2(theta) => theta = cos^-1(sqrt(1 - Ftheta))
+	//Fphi = phi / 2pi => phi = 2 * pi * Fphi
+
+	//Get theta and phi
+	float random = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+	float theta = glm::acos(glm::sqrt(random));
+	random = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+	float phi = 2 * PI * random;
+
+	//create direction vector and rotate it asuming (0, 1, 0) is the normal
+	glm::mat4 rotTheta = glm::rotate(glm::mat4(1.f), theta, glm::vec3(1, 0, 0)); //around x
+	glm::mat4 rotPhi = glm::rotate(glm::mat4(1.f), phi, glm::vec3(0, 1, 0)); // around y
+	glm::vec4 direction4(0, 1, 0, 1); //start at the normal
+	direction4 = rotPhi * rotTheta * direction4;
+
+	//rotate the vector so the direction becomes correct using the real normal
+	//we want to find the theta and phi that will rotate our normal to the real normal
+	//and use them to rotate the direction vector
+	//we use Pythagora's
+
+	//Find theta and phi
+	float hyp = glm::sqrt(sufaceNormal.z * sufaceNormal.z + sufaceNormal.x * sufaceNormal.x);
+	phi = glm::asin(sufaceNormal.x / hyp);
+	theta = glm::asin(hyp / glm::length(sufaceNormal)); //always gives positive angle [0,pi]
+	if (sufaceNormal.y < 0) //if y is negative the angle should be larger
+		theta = 180 - theta;
+	if (sufaceNormal.z < 0) //if z is negative the angle should be negative
+		theta = -theta;
+
+	//rotate
+	rotTheta = glm::rotate(glm::mat4(1.f), theta, glm::vec3(1, 0, 0)); //around x
+	rotPhi = glm::rotate(glm::mat4(1.f), phi, glm::vec3(0, 1, 0)); // around y
+	direction4 = rotPhi * rotTheta * direction4;
+
+	return glm::vec3(direction4.x, direction4.y, direction4.z);
+}
+
+bool Camera::shouldRayContinue()
+{
+	//should be russian roulette later
+	if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < 0.5f)
+		return true;
+	return false;
 }

@@ -4,7 +4,14 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
-#include <ctime>
+
+float Image::floatTo255(float f)
+{
+	/* Float f is defined from 0.0f to 1.0f
+	and is clamped to 0 to 255 */
+
+	return std::max(0.0f, roundf(std::min(1.f, f) * 255));
+}
 
 void Image::setPixel(unsigned int &x, unsigned int &y, glm::vec3 &color)
 {
@@ -42,9 +49,9 @@ void Image::saveAsPPM(const char *filename)
 		for (unsigned int h = 0; h < height; ++h){
 			for (unsigned int w = 0; w < width; ++w){
 
-				r = std::max(0.0f, roundf(std::min(1.f, currentPixel[0]) * 255));
-				g = std::max(0.0f, roundf(std::min(1.f, currentPixel[1]) * 255));
-				b = std::max(0.0f, roundf(std::min(1.f, currentPixel[2]) * 255));
+				r = floatTo255(currentPixel[0]);
+				g = floatTo255(currentPixel[1]);
+				b = floatTo255(currentPixel[2]);
 
 				outFile << static_cast<char>(r) << static_cast<char>(g) << static_cast<char>(b);
 				//std::cout << "Color at " << w << ":" << h << " = " << r << ":" << g  << ":" << b << std::endl;
