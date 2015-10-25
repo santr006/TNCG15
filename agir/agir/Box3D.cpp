@@ -1,11 +1,12 @@
 #include "Box3D.h"
 
-Box3D::Box3D(glm::vec3 pos, glm::vec3 rot, glm::vec3 dim, glm::vec3 col)
+Box3D::Box3D(glm::vec3 pos, glm::vec3 rot, glm::vec3 dim, glm::vec3 col, float reflecCoef)
 {
 	position = pos;
 	rotation = rot;
 	dimensions = dim;
 	color = col;
+	reflectionCoef = reflecCoef;
 
 	//calculate the positions of the planes after rotation
 	glm::mat4 translation = glm::translate(glm::mat4(1.f), -pos);

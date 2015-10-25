@@ -87,13 +87,13 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 		//if an intersection was found
 		if (closestIntersection != nullptr)
 		{
-			//Find the intensity (L) for this point
+			//Find the radiance (L) for this point
 			//L(x -> out) = pi * fr(x, Win, Wout) * L(x <- Win)
 			//fr comes from the BRDF (can ba a constant)
 			//L(x <- Win) needs to be calculated by sending a ray in the direction Win
-			//and find the intensity of the point it hits
+			//and find the radiance of the point it hits
 			//but only if the ray shouldn't be terminated
-			glm::vec3 incomingIntensity(0, 0, 0);
+			glm::vec3 incomingRadiance(0, 0, 0);
 
 			//Should we send a new ray in a random direction
 			//or end the path here and send shadow rays to the light sources to see if the point is lit?
@@ -106,21 +106,22 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 			{
 				//send a ray in the random direction newDir
 				//std::cout << "bounce" << std::endl;
-				incomingIntensity = generateRay(closestIntersection->point, newDir);
-				if (incomingIntensity == glm::vec3(0.f))
+				incomingRadiance = generateRay(closestIntersection->point, newDir);
+				if (incomingRadiance == glm::vec3(0.f))
 					//send shadow rays
-					incomingIntensity = closestIntersection->color;
+					incomingRadiance = closestIntersection->color;
 			}
-			else
-			{
-				//Send shadow rays
-				incomingIntensity = closestIntersection->color;
-			}
-			//temp definition of BRDF untill we fully understand it
-			float fr = 0.8f;
+			//Send shadow rays to find the color of this object if light reaches it
+			glm::vec3 selfIllumination = closestIntersection->color;
+			
+
+			//The BRDF for a Lambertian reflector is a constant reflection coeficient / pi
+			float fr = closestIntersection->reflectionCoef / PI;
+
+//???????Whould it be better to calculated the BRDF at object?????
 
 			//the division by probabilityToContinue is added because of Russian roulette in clacRandomReflectionDir
-			p = PI / probabilityToContinue * fr * incomingIntensity;
+			p = selfIllumination + PI / probabilityToContinue * fr * incomingRadiance;
 			//p = closestIntersection->color;
 		}
 	}
@@ -134,6 +135,8 @@ void Camera::render()
 	//create the picture to be rendered to
 	Image im(widthInPixels, heightInPixels);
 	std::cout << "created image" << std::endl;
+
+	float stepBetweenRays = STEP_BETWEEN_PIXELS / RAY_FACTOR_PER_PIXEL;
 
 	//place near cutting plane
 	glm::vec3 center = position + lookAtDirection * nearPlane;
@@ -156,15 +159,21 @@ void Camera::render()
 	{
 		for (unsigned int j = 0; j < widthInPixels; j++)
 		{
-			//to decide the color for this pixel send a ray from it
-			glm::vec3 rayStart(STEP_BETWEEN_PIXELS*0.5f + leftUpperCorner.x + STEP_BETWEEN_PIXELS * j, -STEP_BETWEEN_PIXELS*0.5f + leftUpperCorner.y - STEP_BETWEEN_PIXELS * i, leftUpperCorner.z);
-			glm::vec3 rayDir = rayStart - position; //the pixel's position - the cameras position
+			//to decide the color for this pixel send a number of rays from it
+			glm::vec3 color(0, 0, 0);
+			for (int k = 0; k < RAY_FACTOR_PER_PIXEL * RAY_FACTOR_PER_PIXEL; k++)
+			{
+				glm::vec3 rayStart(stepBetweenRays*0.5f + leftUpperCorner.x + STEP_BETWEEN_PIXELS * j, -stepBetweenRays*0.5f + leftUpperCorner.y - STEP_BETWEEN_PIXELS * i, leftUpperCorner.z);
+				glm::vec3 rayDir = rayStart - position; //the pixel's position - the cameras position
 
-			//std::cout << "setting pixel in (" << rayStart.x << ", " << rayStart.y << ", " << rayStart.z << ")" << std::endl;
-			//std::cout << "dir (" << rayDir.x << ", " << rayDir.y << ", " << rayDir.z << ")" << std::endl;
+				//std::cout << "setting pixel in (" << rayStart.x << ", " << rayStart.y << ", " << rayStart.z << ")" << std::endl;
+				//std::cout << "dir (" << rayDir.x << ", " << rayDir.y << ", " << rayDir.z << ")" << std::endl;
+
+				color += generateRay(rayStart, rayDir);
+			}
 
 			//save the colors in the image
-			im.setPixel(j, i, generateRay(rayStart, rayDir));
+			im.setPixel(j, i, color / (RAY_FACTOR_PER_PIXEL * RAY_FACTOR_PER_PIXEL));
 		}
 	}
 

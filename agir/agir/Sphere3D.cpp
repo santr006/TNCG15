@@ -6,6 +6,16 @@ Sphere3D::Sphere3D(glm::vec3 &pos, glm::vec3 &rot, float r, glm::vec3 col)
 	rotation = rot;
 	radius = r;
 	color = col;
+	reflectionCoef = 1.f;
+}
+
+Sphere3D::Sphere3D(glm::vec3 &pos, glm::vec3 &rot, float r, glm::vec3 col, float reflecCoef)
+{
+	position = pos;
+	rotation = rot;
+	radius = r;
+	color = col;
+	reflectionCoef = reflecCoef;
 }
 
 Sphere3D::~Sphere3D()
@@ -40,5 +50,5 @@ Intersection* Sphere3D::testRayIntersection(Ray& r)
 	r.tMax = t0;
 
 	glm::vec3 intersectionPoint(r.startPosition + t0 * r.direction);
-	return new Intersection(intersectionPoint, glm::normalize(intersectionPoint - position), color);
+	return new Intersection(intersectionPoint, glm::normalize(intersectionPoint - position), color, reflectionCoef);
 }

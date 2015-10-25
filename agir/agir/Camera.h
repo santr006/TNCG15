@@ -18,6 +18,7 @@
 
 //the distance between two pixels in world coordinates
 const float STEP_BETWEEN_PIXELS = 0.005f;
+const float RAY_FACTOR_PER_PIXEL = 1.f;
 
 class Camera
 {

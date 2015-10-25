@@ -11,6 +11,16 @@ Plane3D::Plane3D(glm::vec3 pos, glm::vec3 rot, glm::vec2 dim, glm::vec3 col)
 	rotation = rot;
 	dimensions = dim;
 	color = col;
+	reflectionCoef = 1.f;
+}
+
+Plane3D::Plane3D(glm::vec3 pos, glm::vec3 rot, glm::vec2 dim, glm::vec3 col, float reflecCoef)
+{
+	position = pos;
+	rotation = rot;
+	dimensions = dim;
+	color = col;
+	reflectionCoef = reflecCoef;
 }
 
 
@@ -122,7 +132,7 @@ Intersection* Plane3D::testRayIntersection(Ray &r)
 					//else
 					r.tMax = t;
 					glm::vec3 intersectionPoint(r.startPosition + t * r.direction);
-					return new Intersection(intersectionPoint, glm::normalize(intersectionPoint - position), color);
+					return new Intersection(intersectionPoint, glm::normalize(intersectionPoint - position), color, reflectionCoef);
 				}
 			}
 		}

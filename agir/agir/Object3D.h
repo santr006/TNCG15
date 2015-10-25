@@ -21,6 +21,7 @@ public:
 	glm::vec3 rotation; //rotation round x-axis and rotation round y-axis
 	glm::vec3 color;  // to be replaced with material?
 				// TODO: BRDF with material properties
+	float reflectionCoef; //A constant reflection coefficient [0,1] for Lambertian surfaces
 
 };
 
