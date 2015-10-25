@@ -30,7 +30,7 @@ Plane3D::~Plane3D()
 }
 
 
-Intersection* Plane3D::testRayIntersection(Ray &r)
+Intersection* Plane3D::testRayIntersection(Ray r)
 {
 	/*std::cout << "ray start pos " << r.startPosition.x << " " << r.startPosition.y << " " << r.startPosition.z << std::endl;
 	std::cout << "ray direction " << r.direction.x << " " << r.direction.y << " " << r.direction.z << std::endl;*/
@@ -72,22 +72,55 @@ Intersection* Plane3D::testRayIntersection(Ray &r)
 	std::cout << "ray start pos " << r.startPosition.x << " " << r.startPosition.y << " " << r.startPosition.z << std::endl;
 	std::cout << "ray direction " << r.direction.x << " " << r.direction.y << " " << r.direction.z << std::endl;*/
 
-	//If D not n == 0 the direction goes along the plane and the ray won't hit the plane
-	float DdotN = glm::dot(r.direction, planeNormal);
-	if (DdotN == 0){
-		//std::cout << "DdotN = 0 " << std::endl;
+	//If D dot n == 0 the direction goes along the plane and the ray won't hit the plane
+	//If D dot n < 0 the surface can't be seen from the ray's starting point
+	//But if the ray is a shadow ray it doesn't matter if we can't see the object, just that it is in the way
+	float DdotN = glm::dot(-r.direction, planeNormal);
+	if (r.shadowRay)
+	{
+		if (DdotN < EPSILON && DdotN > -EPSILON)
+			return nullptr;
+	}
+	else
+		if (DdotN < EPSILON){
+			//std::cout << "DdotN <= 0 " << std::endl;
+			return nullptr;
+		}
+
+	//std::cout << "ray direction " << r.direction.x << " " << r.direction.y << " " << r.direction.z << std::endl;
+	//std::cout << "planeNormal " << planeNormal.x << " " << planeNormal.y << " " << planeNormal.z << std::endl;
+	//Find point inside plane -> position, which is the center of the plane
+	//Find intersection
+	float t;
+	if (r.startPosition - position != planeNormal)
+	{
+		t = glm::dot(r.startPosition - position, planeNormal) / DdotN;
+		//std::cout << "1t = " << t << std::endl;
+	}
+	else
+	{
+		glm::vec3 temp = r.startPosition - lowerLeftCorner;
+		//std::cout << "vector on plane? " << temp.x << " " << temp.y << " " << temp.z << std::endl;
+		t = glm::dot(r.startPosition - lowerLeftCorner, planeNormal) / DdotN;
+		//std::cout << "2t = " << t << " dot " << glm::dot(r.startPosition - lowerLeftCorner, planeNormal) << std::endl;
+	}
+
+	//If t < 0 the plane is behind or inside the ray origin and we aren't interested in it
+	if (t < EPSILON){
+		//std::cout << "t <= 0 " << std::endl;
 		return nullptr;
 	}
 
-	//Find point inside plane -> position, which is the center of the plane
+	/*//Find point inside plane -> position, which is the center of the plane
 	//Find intersection
 	float t = glm::dot(position - r.startPosition, planeNormal) / DdotN;
+	std::cout << "t =  " << t << std::endl;
 
 	//If t < 0 the plane is behind the ray origin and we aren't interested in it
 	if (t < 0){
-		//std::cout << "t < 0 " << std::endl;
+		std::cout << "t < 0 " << std::endl;
 		return nullptr;
-	}
+	}*/
 
 	//Is B inside the surface bounds?
 	//Create vectors that decribe the bounds
@@ -126,13 +159,16 @@ Intersection* Plane3D::testRayIntersection(Ray &r)
 				if (glm::dot(glm::cross(Bvector, bottomSide), planeNormal) > 0)
 				{
 					// If the object is blocked
-					if (t > r.tMax)
+					if (t > r.tMax){
+						//std::cout << "t > r.tMax" << std::endl;
 						return nullptr;
+					}
 
 					//else
 					r.tMax = t;
 					glm::vec3 intersectionPoint(r.startPosition + t * r.direction);
-					return new Intersection(intersectionPoint, glm::normalize(intersectionPoint - position), color, reflectionCoef);
+					//std::cout << "intersected object" << std::endl;
+					return new Intersection(intersectionPoint, glm::normalize(intersectionPoint - position), color, reflectionCoef, t);
 				}
 			}
 		}

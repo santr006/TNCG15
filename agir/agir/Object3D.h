@@ -7,6 +7,7 @@
 #include "Intersection.h"
 
 const float PI = 3.14159265359f;
+const float EPSILON = 0.001;
 
 class Object3D
 {
@@ -15,7 +16,7 @@ public:
 	Object3D();
 	virtual ~Object3D();
 
-	virtual Intersection* testRayIntersection(Ray& r) = 0; // pure virtual function
+	virtual Intersection* testRayIntersection(Ray r) = 0; // pure virtual function
 
 	glm::vec3 position;
 	glm::vec3 rotation; //rotation round x-axis and rotation round y-axis

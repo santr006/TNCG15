@@ -10,7 +10,7 @@ public:
 	
 	~Sphere3D();
 
-	Intersection* testRayIntersection(Ray& r);
+	Intersection* testRayIntersection(Ray r);
 
 	float radius;
 };

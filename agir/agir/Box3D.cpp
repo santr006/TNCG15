@@ -47,7 +47,7 @@ Box3D::~Box3D()
 	// bye bye boxie
 }
 
-Intersection* Box3D::testRayIntersection(Ray &r)
+Intersection* Box3D::testRayIntersection(Ray r)
 {
 	//Does the ray intersect any of the planes that this box consists of?
 	Intersection* closest = front.testRayIntersection(r);

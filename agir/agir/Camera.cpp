@@ -76,17 +76,25 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 		for (unsigned int j = 0; j < theWorld->objectList.size(); j++)
 		{
 			Intersection* current = nullptr;
+			//std::cout << "testing if camera see this object, color " << theWorld->objectList.at(j)->color.x << " " << theWorld->objectList.at(j)->color.y << " " << theWorld->objectList.at(j)->color.z << std::endl;
 			current = theWorld->objectList.at(j)->testRayIntersection(r);
 
 			if (current != nullptr)
 			{
-				closestIntersection = current;
+				if (closestIntersection == nullptr || current->distance < closestIntersection->distance)
+				{
+					closestIntersection = current;
+					//std::cout << "it did" << std::endl;
+				}
 			}
+			else
+				;// std::cout << "it didn't" << std::endl;
 		}
 
 		//if an intersection was found
 		if (closestIntersection != nullptr)
 		{
+			//std::cout << "sees object with color " << closestIntersection->color.x << " " << closestIntersection->color.y << " " << closestIntersection->color.z << std::endl;
 			//Find the radiance (L) for this point
 			//L(x -> out) = pi * fr(x, Win, Wout) * L(x <- Win)
 			//fr comes from the BRDF (can ba a constant)
@@ -106,14 +114,61 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 			{
 				//send a ray in the random direction newDir
 				//std::cout << "bounce" << std::endl;
-				incomingRadiance = generateRay(closestIntersection->point, newDir);
+				/*incomingRadiance = generateRay(closestIntersection->point, newDir);
 				if (incomingRadiance == glm::vec3(0.f))
 					//send shadow rays
-					incomingRadiance = closestIntersection->color;
+					incomingRadiance = closestIntersection->color;*/
 			}
-			//Send shadow rays to find the color of this object if light reaches it
-			glm::vec3 selfIllumination = closestIntersection->color;
-			
+
+///			//Send shadow rays to find the color of this object if light reaches it
+			glm::vec3 selfIllumination(0, 0, 0);
+			bool isObscured = false;
+
+			for (int l = 0; l < theWorld->lightList.size(); l++)
+			{
+				//get current light source
+				Light* currentLight = theWorld->lightList.at(l);
+				//get direction to the light
+				glm::vec3 dirToLight = glm::normalize(currentLight->position - closestIntersection->point);
+
+				//create a ray to the light source
+				Ray shadowRay(closestIntersection->point, dirToLight, true);
+				/*std::cout << "shadow ray pos: " << closestIntersection->point.x << " " << closestIntersection->point.y << " " << closestIntersection->point.z << ", dir: "
+					<< dirToLight.x << " " << dirToLight.y << " " << dirToLight.z << std::endl;*/
+				
+				//variable to store eventual obscuring object
+				Intersection* obscuringIntersection = nullptr;
+
+				// go through all objects in the scene
+				for (int o = 0; o < theWorld->objectList.size(); o++)
+				{
+					//get the object
+					Object3D* currentObject = theWorld->objectList.at(o);
+
+					//check if the shadow ray intersects the object
+					//returns nullpoiter if the object wasn't hit
+					//std::cout << "testing if anything is in the way for the light source" << std::endl;
+					obscuringIntersection = currentObject->testRayIntersection(shadowRay);
+					
+					//std::cout << "point " << obscuringIntersection->point.x << " " << obscuringIntersection->point.y << " " << obscuringIntersection->point.z << std::endl;
+					//std::cout << "hit object after " << shadowRay.tMin << std::endl;
+					
+					// if object is hit
+					if (obscuringIntersection != nullptr)
+					{
+						isObscured = true;
+						//std::cout << "object is obscuring light source, has color " << obscuringIntersection->color.x << " " << obscuringIntersection->color.y << " " << obscuringIntersection->color.z << std::endl;
+						break;
+					}
+				}
+///
+			}
+
+			if (isObscured)
+				;//std::cout << "blocked" << std::endl;
+			else
+				selfIllumination = closestIntersection->color;
+
 
 			//The BRDF for a Lambertian reflector is a constant reflection coeficient / pi
 			float fr = closestIntersection->reflectionCoef / PI;
@@ -121,11 +176,12 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 //???????Whould it be better to calculated the BRDF at object?????
 
 			//the division by probabilityToContinue is added because of Russian roulette in clacRandomReflectionDir
-			p = selfIllumination + PI / probabilityToContinue * fr * incomingRadiance;
+			p = selfIllumination;// +PI / probabilityToContinue * fr * incomingRadiance;
 			//p = closestIntersection->color;
 		}
 	}
 
+	//std::cout << "color for ray " << p.x << " " << p.y << " " << p.z << std::endl;
 	return p;
 }
 
@@ -171,7 +227,7 @@ void Camera::render()
 
 				color += generateRay(rayStart, rayDir);
 			}
-
+			//std::cout << "color " << color.x << " " << color.y << " " << color.z << std::endl;
 			//save the colors in the image
 			im.setPixel(j, i, color / (RAY_FACTOR_PER_PIXEL * RAY_FACTOR_PER_PIXEL));
 		}

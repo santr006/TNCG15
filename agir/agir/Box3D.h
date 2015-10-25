@@ -8,7 +8,7 @@ public:
 	Box3D(glm::vec3 pos, glm::vec3 rot, glm::vec3 dim, glm::vec3 col, float reflecCoef);
 	~Box3D();
 
-	Intersection* testRayIntersection(Ray &r);
+	Intersection* testRayIntersection(Ray r);
 
 	glm::vec3 dimensions;
 	Plane3D front;
