@@ -114,10 +114,10 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 			{
 				//send a ray in the random direction newDir
 				//std::cout << "bounce" << std::endl;
-				/*incomingRadiance = generateRay(closestIntersection->point, newDir);
+				incomingRadiance = generateRay(closestIntersection->point, newDir);
 				if (incomingRadiance == glm::vec3(0.f))
 					//send shadow rays
-					incomingRadiance = closestIntersection->color;*/
+					incomingRadiance = closestIntersection->color;
 			}
 
 ///			//Send shadow rays to find the color of this object if light reaches it
@@ -126,6 +126,9 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 
 			for (int l = 0; l < theWorld->lightList.size(); l++)
 			{
+				//reset the bool
+				isObscured = false;
+
 				//get current light source
 				Light* currentLight = theWorld->lightList.at(l);
 				//get direction to the light
@@ -161,14 +164,10 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 						break;
 					}
 				}
+				if (!isObscured)
+					selfIllumination += closestIntersection->color * glm::max(0.f, glm::dot(closestIntersection->surfaceNormal, shadowRay.direction));
 ///
 			}
-
-			if (isObscured)
-				;//std::cout << "blocked" << std::endl;
-			else
-				selfIllumination = closestIntersection->color;
-
 
 			//The BRDF for a Lambertian reflector is a constant reflection coeficient / pi
 			float fr = closestIntersection->reflectionCoef / PI;
@@ -176,7 +175,7 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 //???????Whould it be better to calculated the BRDF at object?????
 
 			//the division by probabilityToContinue is added because of Russian roulette in clacRandomReflectionDir
-			p = selfIllumination;// +PI / probabilityToContinue * fr * incomingRadiance;
+			p = selfIllumination + PI / probabilityToContinue * fr * incomingRadiance;
 			//p = closestIntersection->color;
 		}
 	}

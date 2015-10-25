@@ -64,7 +64,7 @@ Intersection* Plane3D::testRayIntersection(Ray r)
 	r.direction = glm::vec3(temp.x, temp.y, temp.z);*/
 
 	//Find plane normal
-	glm::vec3 planeNormal(glm::cross(lowerRightCorner - lowerLeftCorner, upperLeftCorner - lowerLeftCorner));
+	glm::vec3 planeNormal(glm::normalize(glm::cross(lowerRightCorner - lowerLeftCorner, upperLeftCorner - lowerLeftCorner)));
 
 	/*std::cout << "lower left " << lowerLeftCorner.x << " " << lowerLeftCorner.y << " " << lowerLeftCorner.z << std::endl;
 	std::cout << "lower right " << lowerRightCorner.x << " " << lowerRightCorner.y << " " << lowerRightCorner.z << std::endl;
@@ -168,7 +168,7 @@ Intersection* Plane3D::testRayIntersection(Ray r)
 					r.tMax = t;
 					glm::vec3 intersectionPoint(r.startPosition + t * r.direction);
 					//std::cout << "intersected object" << std::endl;
-					return new Intersection(intersectionPoint, glm::normalize(intersectionPoint - position), color, reflectionCoef, t);
+					return new Intersection(intersectionPoint, planeNormal, color, reflectionCoef, t);
 				}
 			}
 		}
