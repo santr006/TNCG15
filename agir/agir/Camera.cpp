@@ -116,7 +116,7 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 			{
 				//send a ray in the random direction newDir
 				incomingRadiance = generateRay(closestIntersection->point, newDir);
-
+				//std::cout << "bonus color " << incomingRadiance.x << " " << incomingRadiance.y << " " << incomingRadiance.z << std::endl;
 				//it's okay if the ray didn't hit anything
 
 				/*if (incomingRadiance == glm::vec3(0.f))
@@ -127,6 +127,8 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 ///			//Send shadow rays to find the color of this object if light reaches it
 			glm::vec3 selfIllumination(0, 0, 0);
 			bool isObscured = false;
+			int noOfAreaLightRaysToBeSent = 5; 
+			int noOfAreaLightRaysAlreadySent = 0;
 
 			for (int l = 0; l < theWorld->lightList.size(); l++)
 			{
@@ -135,41 +137,97 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 
 				//get current light source
 				Light* currentLight = theWorld->lightList.at(l);
-				//get direction to the light
-				glm::vec3 dirToLight = glm::normalize(currentLight->position - closestIntersection->point);
 
-				//create a ray to the light source
-				Ray shadowRay(closestIntersection->point, dirToLight, true);
-				/*std::cout << "shadow ray pos: " << closestIntersection->point.x << " " << closestIntersection->point.y << " " << closestIntersection->point.z << ", dir: "
-					<< dirToLight.x << " " << dirToLight.y << " " << dirToLight.z << std::endl;*/
-				
-				//variable to store eventual obscuring object
-				Intersection* obscuringIntersection = nullptr;
-
-				// go through all objects in the scene
-				for (int o = 0; o < theWorld->objectList.size(); o++)
+				if (!currentLight->areaLight)
 				{
-					//get the object
-					Object3D* currentObject = theWorld->objectList.at(o);
+					//get direction to the light
+					glm::vec3 dirToLight = glm::normalize(currentLight->position - closestIntersection->point);
 
-					//check if the shadow ray intersects the object
-					//returns nullpoiter if the object wasn't hit
-					//std::cout << "testing if anything is in the way for the light source" << std::endl;
-					obscuringIntersection = currentObject->testRayIntersection(shadowRay);
-					
-					//std::cout << "point " << obscuringIntersection->point.x << " " << obscuringIntersection->point.y << " " << obscuringIntersection->point.z << std::endl;
-					//std::cout << "hit object after " << shadowRay.tMin << std::endl;
-					
-					// if object is hit
-					if (obscuringIntersection != nullptr)
+					//create a ray to the light source
+					Ray shadowRay(closestIntersection->point, dirToLight, true);
+					/*std::cout << "shadow ray pos: " << closestIntersection->point.x << " " << closestIntersection->point.y << " " << closestIntersection->point.z << ", dir: "
+						<< dirToLight.x << " " << dirToLight.y << " " << dirToLight.z << std::endl;*/
+
+					//variable to store eventual obscuring object
+					Intersection* obscuringIntersection = nullptr;
+
+					// go through all objects in the scene
+					for (int o = 0; o < theWorld->objectList.size(); o++)
 					{
-						isObscured = true;
-						//std::cout << "object is obscuring light source, has color " << obscuringIntersection->color.x << " " << obscuringIntersection->color.y << " " << obscuringIntersection->color.z << std::endl;
-						break;
+						//get the object
+						Object3D* currentObject = theWorld->objectList.at(o);
+
+						//check if the shadow ray intersects the object
+						//returns nullpoiter if the object wasn't hit
+						//std::cout << "testing if anything is in the way for the light source" << std::endl;
+						obscuringIntersection = currentObject->testRayIntersection(shadowRay);
+
+						//std::cout << "point " << obscuringIntersection->point.x << " " << obscuringIntersection->point.y << " " << obscuringIntersection->point.z << std::endl;
+						//std::cout << "hit object after " << shadowRay.tMin << std::endl;
+
+						// if object is hit
+						if (obscuringIntersection != nullptr)
+						{
+							isObscured = true;
+							//std::cout << "object is obscuring light source, has color " << obscuringIntersection->color.x << " " << obscuringIntersection->color.y << " " << obscuringIntersection->color.z << std::endl;
+							break;
+						}
 					}
+					if (!isObscured)
+						selfIllumination += closestIntersection->color * glm::max(0.f, glm::dot(closestIntersection->surfaceNormal, shadowRay.direction));
 				}
-				if (!isObscured)
-					selfIllumination += closestIntersection->color * glm::max(0.f, glm::dot(closestIntersection->surfaceNormal, shadowRay.direction));
+				else
+				{
+					//std::cout << "area light source in scene" << std::endl;
+					//when we have an area light source, objects can get hit by many light rays from different points on the light's surface
+					//we need to find points that give us a good representation of the light source
+					//and send shadow rays too all these points					
+
+					//loop
+					glm::vec3 radianceFromThisLightSource;
+					int noOfShadowRays = 5;
+					for (int r = 0; r < noOfShadowRays; r++)
+					{
+						//find random point on the plane
+						glm::vec3 pointOnLight = currentLight->randomPointOnAreaLight();
+
+						//create a ray from the object point to the point on the light source
+						Ray shadowRay(currentLight->position, pointOnLight - closestIntersection->point);
+						//std::cout << "ray dir " << shadowRay.direction.x << " " << shadowRay.direction.y << " " << shadowRay.direction.z << std::endl;
+
+						//send a shadow ray along the ray
+						//variable to store eventual obscuring object
+						Intersection* obscuringIntersection = nullptr;
+
+						// go through all objects in the scene
+						for (int o = 0; o < theWorld->objectList.size(); o++)
+						{
+							//get the object
+							Object3D* currentObject = theWorld->objectList.at(o);
+
+							//check if the shadow ray intersects the object
+							//returns nullpoiter if the object wasn't hit
+							//std::cout << "testing if anything is in the way for the light source" << std::endl;
+							obscuringIntersection = currentObject->testRayIntersection(shadowRay);
+
+							//std::cout << "point " << obscuringIntersection->point.x << " " << obscuringIntersection->point.y << " " << obscuringIntersection->point.z << std::endl;
+							//std::cout << "hit object after " << shadowRay.tMin << std::endl;
+
+							// if object is hit
+							if (obscuringIntersection != nullptr)
+							{
+								isObscured = true;
+								//std::cout << "object is obscuring light source, has color " << obscuringIntersection->color.x << " " << obscuringIntersection->color.y << " " << obscuringIntersection->color.z << std::endl;
+								break;
+							}
+						}
+						//sum the radiance
+						if (!isObscured)
+							radianceFromThisLightSource += closestIntersection->color * glm::max(0.f, glm::dot(closestIntersection->surfaceNormal, shadowRay.direction));
+					}
+					//get the average of the radiance
+					selfIllumination += radianceFromThisLightSource / (float)noOfShadowRays;
+				}
 ///
 			}
 
@@ -236,7 +294,7 @@ void Camera::render()
 	}
 
 	//save the image to a file
-	std::string fileName = "b.ppm";
+	std::string fileName = "a.ppm";
 	im.saveAsPPM(fileName.c_str());
 }
 
@@ -289,9 +347,9 @@ glm::vec3 Camera::calcRandomReflectionDir(glm::vec3 surfaceNormal, float probabi
 	//define local coordinate system by taking the cross product of the normal and thy y-axis
 	//then cross that vector with the normal to get three axises
 	glm::vec3 up = glm::vec3(0, 1, 0);
-	glm::vec3 x = surfaceNormal;
-	glm::vec3 y = glm::cross(x, up);
-	glm::vec3 z = glm::cross(x, y);
+	glm::vec3 y = surfaceNormal;
+	glm::vec3 x = glm::cross(y, up);
+	glm::vec3 z = glm::cross(y, x);
 
 	//create a translation matrix to transform the random direction from local coordinates to world coordinates
 	glm::mat4 trans(x.x, x.y, x.z, 0.f, 

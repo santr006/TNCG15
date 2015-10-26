@@ -44,11 +44,6 @@ Intersection* Sphere3D::testRayIntersection(Ray r)
 			return nullptr;
 	}
 
-	// If the object is blocked
-	if (t0 > r.tMax)
-		return nullptr;
-	r.tMax = t0;
-
 	glm::vec3 intersectionPoint(r.startPosition + t0 * r.direction);
 	return new Intersection(intersectionPoint, glm::normalize(intersectionPoint - position), color, reflectionCoef, t0);
 }

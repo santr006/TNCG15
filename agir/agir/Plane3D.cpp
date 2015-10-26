@@ -106,17 +106,6 @@ Intersection* Plane3D::testRayIntersection(Ray r)
 		return nullptr;
 	}
 
-	/*//Find point inside plane -> position, which is the center of the plane
-	//Find intersection
-	float t = glm::dot(position - r.startPosition, planeNormal) / DdotN;
-	std::cout << "t =  " << t << std::endl;
-
-	//If t < 0 the plane is behind the ray origin and we aren't interested in it
-	if (t < 0){
-		std::cout << "t < 0 " << std::endl;
-		return nullptr;
-	}*/
-
 	//Is B inside the surface bounds?
 	//Create vectors that decribe the bounds
 	//"Inside" is on the right side of the vector
