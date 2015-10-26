@@ -44,6 +44,8 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 	//if there are bounding boxes in the scene
 	if (theWorld->BBoxList.size() != 0) //check if the ray hits any bounding box
 	{
+		//At the moment we don't use bounding boxes
+
 		for (unsigned int i = 0; i < theWorld->BBoxList.size(); i++)
 		{
 			glm::vec3 boxIntersectionPoint;
@@ -113,11 +115,13 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 			if (newDir.x != 0 || newDir.y != 0 || newDir.z != 0) //a direction can't be 0
 			{
 				//send a ray in the random direction newDir
-				//std::cout << "bounce" << std::endl;
 				incomingRadiance = generateRay(closestIntersection->point, newDir);
-				if (incomingRadiance == glm::vec3(0.f))
+
+				//it's okay if the ray didn't hit anything
+
+				/*if (incomingRadiance == glm::vec3(0.f))
 					//send shadow rays
-					incomingRadiance = closestIntersection->color;
+					incomingRadiance = closestIntersection->color;**/
 			}
 
 ///			//Send shadow rays to find the color of this object if light reaches it
@@ -176,7 +180,6 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 
 			//the division by probabilityToContinue is added because of Russian roulette in clacRandomReflectionDir
 			p = selfIllumination + PI / probabilityToContinue * fr * incomingRadiance;
-			//p = closestIntersection->color;
 		}
 	}
 
@@ -233,11 +236,11 @@ void Camera::render()
 	}
 
 	//save the image to a file
-	std::string fileName = "a.ppm";
+	std::string fileName = "b.ppm";
 	im.saveAsPPM(fileName.c_str());
 }
 
-glm::vec3 Camera::calcRandomReflectionDir(glm::vec3 sufaceNormal, float probabilityOfSuccess)
+glm::vec3 Camera::calcRandomReflectionDir(glm::vec3 surfaceNormal, float probabilityOfSuccess)
 {
 	//A probailtiy distribution function p(x) returns how likely it is that a value x will happen [0,1]
 	//A cumulative distribution function F(x) returns how likely it is that a value less or equal to x will happen [0,1]
@@ -277,18 +280,34 @@ glm::vec3 Camera::calcRandomReflectionDir(glm::vec3 sufaceNormal, float probabil
 	}
 	//std::cout << "survived" << std::endl;
 
-	//create direction vector and rotate it asuming (0, 1, 0) is the normal
+	//create direction vector and rotate it assuming (0, 1, 0) is the normal
 	glm::mat4 rotTheta = glm::rotate(glm::mat4(1.f), theta, glm::vec3(1, 0, 0)); //around x
 	glm::mat4 rotPhi = glm::rotate(glm::mat4(1.f), phi, glm::vec3(0, 1, 0)); // around y
 	glm::vec4 direction4(0, 1, 0, 1); //start at the normal
 	direction4 = rotPhi * rotTheta * direction4;
+
+	//define local coordinate system by taking the cross product of the normal and thy y-axis
+	//then cross that vector with the normal to get three axises
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 x = surfaceNormal;
+	glm::vec3 y = glm::cross(x, up);
+	glm::vec3 z = glm::cross(x, y);
+
+	//create a translation matrix to transform the random direction from local coordinates to world coordinates
+	glm::mat4 trans(x.x, x.y, x.z, 0.f, 
+					y.x, y.y, y.z, 0.f, 
+					z.x, z.y, z.z, 0.f, 
+					0.f, 0.f, 0.f, 1.f);
+	direction4 = trans * direction4;
+
+
 
 	//rotate the vector so the direction becomes correct using the real normal
 	//we want to find the theta and phi that will rotate our normal to the real normal
 	//and use them to rotate the direction vector
 	//we use Pythagora's
 
-	//Find theta and phi
+	/*//Find theta and phi
 	float hyp = glm::sqrt(sufaceNormal.z * sufaceNormal.z + sufaceNormal.x * sufaceNormal.x);
 	phi = glm::asin(glm::abs(sufaceNormal.x) / hyp);
 	if (sufaceNormal.x > 0)
@@ -309,8 +328,8 @@ glm::vec3 Camera::calcRandomReflectionDir(glm::vec3 sufaceNormal, float probabil
 	//rotate
 	rotTheta = glm::rotate(glm::mat4(1.f), theta, glm::vec3(1, 0, 0)); //around x
 	rotPhi = glm::rotate(glm::mat4(1.f), phi, glm::vec3(0, 1, 0)); // around y
-	direction4 = rotPhi * rotTheta * direction4;
+	direction4 = rotPhi * rotTheta * direction4;*/
 
-	return glm::vec3(direction4.x, direction4.y, direction4.z);
+	return glm::normalize(glm::vec3(direction4.x, direction4.y, direction4.z));
 
 }

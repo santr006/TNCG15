@@ -43,9 +43,9 @@ Intersection* Plane3D::testRayIntersection(Ray r)
 
 	//We want to know at what t-value we get a point B on the ray that is inside the plane
 	//After some calculations this formula was found
-	//t = (A - O) dot n / D dot n
+	//t = (O - A) dot n / D dot n
 
-	//translate and rotate to local coordinate system for the plane
+	//translate the plane to it's local coordinate system rotate it and tranlate it beck
 	glm::mat4 translation = glm::translate(glm::mat4(1.f), -position);
 	glm::mat4 translationBack = glm::translate(glm::mat4(1.f), position);
 	glm::mat4 rotat = glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.f), -rotation.x, glm::vec3(1, 0, 0)), -rotation.y, glm::vec3(0, 1, 0)), -rotation.z, glm::vec3(0, 0, 1));
@@ -57,11 +57,6 @@ Intersection* Plane3D::testRayIntersection(Ray r)
 	glm::vec3 lowerRightCorner(temp.x, temp.y, temp.z);
 	temp = glm::vec4(translationBack * toLocal * glm::vec4(position + glm::vec3(-dimensions.x / 2, dimensions.y / 2, 0), 1));
 	glm::vec3 upperLeftCorner(temp.x, temp.y, temp.z);
-
-	/*temp = glm::vec4(toLocal * glm::vec4(r.startPosition, 1));
-	r.startPosition = glm::vec3(temp.x, temp.y, temp.z);
-	temp = glm::vec4(rotat * glm::vec4(r.direction, 1));
-	r.direction = glm::vec3(temp.x, temp.y, temp.z);*/
 
 	//Find plane normal
 	glm::vec3 planeNormal(glm::normalize(glm::cross(lowerRightCorner - lowerLeftCorner, upperLeftCorner - lowerLeftCorner)));
@@ -139,7 +134,7 @@ Intersection* Plane3D::testRayIntersection(Ray r)
 	//If the result is a vector along the plane's normal, the point B is on the correct side of the bounding vector
 	//If the result is a vector against the plane's normal the point is on the wrong side
 	//To know if the vector is going along the normal we take the dot product between them
-	//If it is larger than zero they with eachother
+	//If it is larger than zero they go with each other
 
 	//leftSide
 	glm::vec3 B(r.startPosition + t * r.direction);
