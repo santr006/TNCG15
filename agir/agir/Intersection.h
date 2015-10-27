@@ -3,7 +3,7 @@
 struct Intersection{
 
 	// A struct may be initialized with a initializer list or with this constructor
-	Intersection(glm::vec3 p, glm::vec3 sf, glm::vec3 c, float reflecCoef, float dist) : point(p), surfaceNormal(sf), color(c), reflectionCoef(reflecCoef), distance(dist){}
+	Intersection(glm::vec3 p, glm::vec3 sf, glm::vec3 c, float reflecCoef, float dist, bool l = false) : point(p), surfaceNormal(sf), color(c), reflectionCoef(reflecCoef), distance(dist), light(l){}
 
 	// data members
 	glm::vec3 point; //the point where the ray intersects the surface
@@ -11,4 +11,5 @@ struct Intersection{
 	glm::vec3 color; //the surface's color
 	float reflectionCoef; //how much of incoming radiance is reflected from the surface
 	float distance; //distance traveled along the ray
+	bool light; //saves if the object hit was a light source or not
 };

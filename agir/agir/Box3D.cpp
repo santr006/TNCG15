@@ -12,33 +12,33 @@ Box3D::Box3D(glm::vec3 pos, glm::vec3 rot, glm::vec3 dim, glm::vec3 col, float r
 	glm::mat4 translation = glm::translate(glm::mat4(1.f), -pos);
 	glm::mat4 translationBack = glm::translate(glm::mat4(1.f), pos);
 	//we have chosen not to rotate around z
-	glm::mat4 rotat =  glm::rotate(glm::rotate(glm::mat4(1.f), -rot.x, glm::vec3(1, 0, 0)), -rot.y, glm::vec3(0, 1, 0));
+	glm::mat4 rotat = glm::rotate(glm::rotate(glm::mat4(1.f), -rot.x, glm::vec3(1, 0, 0)), -rot.y, glm::vec3(0, 1, 0));
 
 	glm::vec4 planePos(pos.x, pos.y, pos.z + dim.z / 2, 1);
 	planePos = translationBack * rotat * translation * planePos;
-	front = Plane3D(glm::vec3(planePos.x, planePos.y, planePos.z), rot, glm::vec2(dim.x, dim.y), glm::vec3(1, 0, 0));
+	front = Plane3D(glm::vec3(planePos.x, planePos.y, planePos.z), rot, glm::vec2(dim.x, dim.y), col);//glm::vec3(1, 0, 0));
 	
 	planePos = glm::vec4(pos.x, pos.y, pos.z - dim.z / 2, 1);
 	planePos = translationBack * rotat * translation * planePos;
-	back = Plane3D(glm::vec3(planePos.x, planePos.y, planePos.z), glm::vec3(rot.x, rot.y + PI, 0), glm::vec2(dim.x, dim.y), glm::vec3(0.5f, 0.5f, 0.5f));
+	back = Plane3D(glm::vec3(planePos.x, planePos.y, planePos.z), glm::vec3(rot.x, rot.y + PI, 0), glm::vec2(dim.x, dim.y), col);//glm::vec3(0.5f, 0.5f, 0.5f));
 
 	planePos = glm::vec4(pos.x + dim.x / 2, pos.y, pos.z, 1);
 	planePos = translationBack * rotat * translation * planePos;
-	right = Plane3D(glm::vec3(planePos.x, planePos.y, planePos.z), glm::vec3(rot.x, rot.y - PI / 2, 0), glm::vec2(dim.z, dim.y), glm::vec3(1, 1, 1));
+	right = Plane3D(glm::vec3(planePos.x, planePos.y, planePos.z), glm::vec3(rot.x, rot.y - PI / 2, 0), glm::vec2(dim.z, dim.y), col);//glm::vec3(1, 1, 1));
 
 	planePos = glm::vec4(pos.x - dim.x / 2, pos.y, pos.z, 1);
 	planePos = translationBack * rotat * translation * planePos;
-	left = Plane3D(glm::vec3(planePos.x, planePos.y, planePos.z), glm::vec3(rot.x, rot.y + PI / 2, 0), glm::vec2(dim.z, dim.y), glm::vec3(0, 1, 0));
+	left = Plane3D(glm::vec3(planePos.x, planePos.y, planePos.z), glm::vec3(rot.x, rot.y + PI / 2, 0), glm::vec2(dim.z, dim.y), col);//glm::vec3(0, 1, 0));
 
 	planePos = glm::vec4(pos.x, pos.y + dim.y / 2, pos.z, 1);
 	planePos = translationBack * rotat * translation * planePos;
 	//to make the top and bottom move like we want them to we must rotate around z when the box rotates around y
-	top = Plane3D(glm::vec3(planePos.x, planePos.y, planePos.z), glm::vec3(rot.x + PI / 2, 0, -rot.y), glm::vec2(dim.x, dim.z), glm::vec3(0, 0, 1));
+	top = Plane3D(glm::vec3(planePos.x, planePos.y, planePos.z), glm::vec3(rot.x + PI / 2, 0, -rot.y), glm::vec2(dim.x, dim.z), col);//glm::vec3(0, 0, 1));
 	
 	planePos = glm::vec4(pos.x, pos.y - dim.y / 2, pos.z, 1);
 	planePos = translationBack * rotat * translation * planePos;
 	//to make the top and bottom move like we want them to we must rotate around z when the box rotates around y
-	bottom = Plane3D(glm::vec3(planePos.x, planePos.y, planePos.z), glm::vec3(rot.x - PI / 2, 0, -rot.y), glm::vec2(dim.x, dim.z), glm::vec3(1, 1, 0));
+	bottom = Plane3D(glm::vec3(planePos.x, planePos.y, planePos.z), glm::vec3(rot.x - PI / 2, 0, -rot.y), glm::vec2(dim.x, dim.z), col);//glm::vec3(1, 1, 0));
 	
 }
 
