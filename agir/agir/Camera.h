@@ -17,8 +17,8 @@
 #include <cmath>
 
 //the distance between two pixels in world coordinates
-const float STEP_BETWEEN_PIXELS = 0.0025f;
-const float RAY_FACTOR_PER_PIXEL = 2.f;
+const float STEP_BETWEEN_PIXELS = 0.005f;
+const float RAY_FACTOR_PER_PIXEL = 1.f;
 
 class Camera
 {

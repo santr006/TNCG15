@@ -45,7 +45,7 @@ Intersection* Plane3D::testRayIntersection(Ray r)
 	//After some calculations this formula was found
 	//t = (O - A) dot n / D dot n
 
-	//translate the plane to it's local coordinate system rotate it and tranlate it beck
+	//translate the plane to it's local coordinate system rotate it and tranlate it back
 	glm::mat4 translation = glm::translate(glm::mat4(1.f), -position);
 	glm::mat4 translationBack = glm::translate(glm::mat4(1.f), position);
 	glm::mat4 rotat = glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.f), -rotation.x, glm::vec3(1, 0, 0)), -rotation.y, glm::vec3(0, 1, 0)), -rotation.z, glm::vec3(0, 0, 1));

@@ -172,8 +172,12 @@ Intersection* Light::testRayIntersection(Ray r)
 				}
 			}
 		}
+		//std::cout << "not inside bounds" << std::endl;
+		return nullptr;
 	}
-	
-	//std::cout << "not inside bounds" << std::endl;
-	return nullptr;
+	else //point light
+	{
+		float distance = glm::length(position - r.startPosition);
+		return new Intersection(position, glm::vec3(0.f), color, 0, distance, true);
+	}
 }
