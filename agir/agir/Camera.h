@@ -17,8 +17,8 @@
 #include <cmath>
 
 //the distance between two pixels in world coordinates
-const float STEP_BETWEEN_PIXELS = 0.005f;
-const float RAY_FACTOR_PER_PIXEL = 1.f;
+const float STEP_BETWEEN_PIXELS = 0.005f / 4.f;
+const float RAY_FACTOR_PER_PIXEL = 4.f;
 
 class Camera
 {
@@ -43,6 +43,9 @@ public:
 	glm::vec3 handlePointLightSource(Light* currentLight, Intersection* closestIntersection, World* theWorld);
 	glm::vec3 handleAreaLightSource(Light* currentLight, Intersection* closestIntersection, World* theWorld);
 
+
+	glm::vec3 calcPerfectReflectionDir(glm::vec3 incomingDir, glm::vec3 surfaceNormal);
+	glm::vec3 calcPerfectRefractionDir(glm::vec3 incomingDir, glm::vec3 surfaceNormal, float n1, float n2);
 
 	World* theWorld; // pointer to the world that will be rendered
 	glm::vec3 position; //position of the observer

@@ -5,10 +5,11 @@
 class Box3D : public Object3D
 {
 public:
-	Box3D(glm::vec3 pos, glm::vec3 rot, glm::vec3 dim, glm::vec3 col, float reflecCoef);
+	Box3D(glm::vec3 pos, glm::vec3 rot, glm::vec3 dim, glm::vec3 col, float reflecCoef, bool trans = false);
 	~Box3D();
 
 	Intersection* testRayIntersection(Ray r);
+	Intersection* testRayIntersectionInside(Ray r);
 
 	glm::vec3 dimensions;
 	Plane3D front;

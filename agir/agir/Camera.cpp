@@ -61,9 +61,11 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 				for (unsigned int j = 0; j < theWorld->BBoxList.at(i)->objects.size(); j++)
 				{
 					//if it did the color will be white, if not the color is still black
-					if (theWorld->BBoxList.at(i)->objects.at(j)->testRayIntersection(newRay))
+					Intersection* object = theWorld->BBoxList.at(i)->objects.at(j)->testRayIntersection(newRay); 
+					if (object != nullptr)
 					{
 						p = glm::vec3(1.f, 1.f, 1.f); //std::cout << "hit" << std::endl;
+						delete object;
 					}
 					//use object intersection point in a later stage
 				}
@@ -85,9 +87,13 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 			{
 				if (closestIntersection == nullptr || current->distance < closestIntersection->distance)
 				{
+					//delete old closest intersection
+					delete closestIntersection;
 					closestIntersection = current;
 					//std::cout << "it did" << std::endl;
 				}
+				else //delete current
+					delete current;
 			}
 			else
 				;// std::cout << "it didn't" << std::endl;
@@ -106,26 +112,50 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 				//and find the radiance of the point it hits
 				//but only if the ray shouldn't be terminated
 				glm::vec3 incomingRadiance(0, 0, 0);
-
-				//Should we send a new ray in a random direction
-				//or end the path here and send shadow rays to the light sources to see if the point is lit?
 				float probabilityToContinue = 0.1f;
-				glm::vec3 newDir = calcRandomReflectionDir(closestIntersection->surfaceNormal, probabilityToContinue);
-				//returns (0, 0, 0) if the ray shouldn't continue
-				//determined by Russian roulette
 
-				if (newDir.x != 0 || newDir.y != 0 || newDir.z != 0) //a direction can't be 0
+				//If the object is transparent it is a perfect reflector and creates a refracted ray
+				/*if (closestIntersection->transparent)
 				{
-					//send a ray in the random direction newDir
-					incomingRadiance = generateRay(closestIntersection->point, newDir);
-					//std::cout << "new dir " << newDir.x << " " << newDir.y << " " << newDir.z << std::endl;
-					//std::cout << "bonus color " << incomingRadiance.x << " " << incomingRadiance.y << " " << incomingRadiance.z << std::endl;
-					//it's okay if the ray didn't hit anything
+					//calculate the perfectly reflected ray
+					//glm::vec3 newDir = calcPerfectReflectionDir(r.direction, closestIntersection->surfaceNormal);
+					
+					//calculate the perfectly refracted ray from air to glass
+					glm::vec3 newDir = calcPerfectRefractionDir(r.direction, closestIntersection->surfaceNormal, 1.f, 1.5f);
 
-					/*if (incomingRadiance == glm::vec3(0.f))
-						//send shadow rays
-						incomingRadiance = closestIntersection->color;**/
+					//calculate point where the ray leaves the object
+					Ray newRay(closestIntersection->point, newDir);
+					//Intersection* leavingPoint = closestIntersection->object->testRayIntersectionInside(newRay);
+
+					//calculate the perfectly refracted ray from glass to air
+					newDir = calcPerfectRefractionDir(newRay.direction, leavingPoint->surfaceNormal, 1.5f, 1.f);
+
+					//reflection inside the glass?
+
+					//add them to the incoming radiance with the appropriate importance
+					incomingRadiance = generateRay(leavingPoint->point, newDir);
 				}
+				else
+				{*/
+					//Should we send a new ray in a random direction
+					//or end the path here and send shadow rays to the light sources to see if the point is lit?
+					glm::vec3 newDir = calcRandomReflectionDir(closestIntersection->surfaceNormal, probabilityToContinue);
+					//returns (0, 0, 0) if the ray shouldn't continue
+					//determined by Russian roulette
+
+					if (newDir.x != 0 || newDir.y != 0 || newDir.z != 0) //a direction can't be 0
+					{
+						//send a ray in the random direction newDir
+						incomingRadiance = generateRay(closestIntersection->point, newDir);
+						//std::cout << "new dir " << newDir.x << " " << newDir.y << " " << newDir.z << std::endl;
+						//std::cout << "bonus color " << incomingRadiance.x << " " << incomingRadiance.y << " " << incomingRadiance.z << std::endl;
+						//it's okay if the ray didn't hit anything
+
+						/*if (incomingRadiance == glm::vec3(0.f))
+							//send shadow rays
+							incomingRadiance = closestIntersection->color;**/
+					}
+				//}
 
 ///				//Send shadow rays to find the color of this object if light reaches it
 				glm::vec3 selfIllumination(0, 0, 0);
@@ -159,6 +189,8 @@ glm::vec3 Camera::generateRay(glm::vec3 pos, glm::vec3 dir)
 			//if the ray's start position is in the camera position this ray sees light sources
 			else if (pos == position)
 				p = closestIntersection->color;
+
+			delete closestIntersection;
 		}
 	}
 
@@ -212,6 +244,8 @@ void Camera::render()
 			//save the colors in the image
 			im.setPixel(j, i, color / (RAY_FACTOR_PER_PIXEL * RAY_FACTOR_PER_PIXEL));
 		}
+		if ((i+1)%20 == 0)
+			std::cout << (float)(i + 1)/heightInPixels * 100.f << std::endl;
 	}
 
 	//save the image to a file
@@ -358,11 +392,15 @@ glm::vec3 Camera::handlePointLightSource(Light* currentLight, Intersection* clos
 			if (obscuringIntersection->distance < theLight->distance)
 			{
 				isObscured = true;
+				delete obscuringIntersection;
 				//std::cout << "object is obscuring light source, has color " << obscuringIntersection->color.x << " " << obscuringIntersection->color.y << " " << obscuringIntersection->color.z << std::endl;
 				break;
 			}
+			delete obscuringIntersection;
 		}
 	}
+	delete theLight;
+
 	if (!isObscured)
 		return closestIntersection->color * glm::max(0.f, glm::dot(closestIntersection->surfaceNormal, shadowRay.direction));
 	return glm::vec3(0.f);
@@ -420,11 +458,15 @@ glm::vec3 Camera::handleAreaLightSource(Light* currentLight, Intersection* close
 				if (obscuringIntersection->distance < theLight->distance)
 				{
 					isObscured = true;
+					delete obscuringIntersection;
 					//std::cout << "object is obscuring light source, has color " << obscuringIntersection->color.x << " " << obscuringIntersection->color.y << " " << obscuringIntersection->color.z << std::endl;
 					break;
 				}
+				delete obscuringIntersection;
 			}
 		}
+		delete theLight;
+
 		//sum the radiance
 		if (!isObscured)
 		{
@@ -434,4 +476,34 @@ glm::vec3 Camera::handleAreaLightSource(Light* currentLight, Intersection* close
 
 	//get the average of the radiance
 	return radianceFromThisLightSource / (float)noOfShadowRays;
+}
+
+glm::vec3 Camera::calcPerfectReflectionDir(glm::vec3 incomingDir, glm::vec3 surfaceNormal){
+	//The new direction is with the same angle from the normal
+	//which mean that if the incoming direction is rotated wiht pi around the normal
+	//we get the negative new direction
+
+	glm::vec4 newDir = glm::rotate(glm::mat4(1.f), PI, surfaceNormal) * glm::vec4(incomingDir, 1);
+
+	return glm::normalize(glm::vec3(-newDir.x, -newDir.y, -newDir.z));
+}
+
+glm::vec3 Camera::calcPerfectRefractionDir(glm::vec3 incomingDir, glm::vec3 surfaceNormal, float n1, float n2){
+	//snell's law: sin theta1 / sin theta2 = n2 / n1
+	//theta1 is the angle between the incoming direction and the surface normal which both have lenght 1
+	float cosTheta1 = glm::dot(surfaceNormal, -incomingDir);
+	float theta1 = glm::acos(cosTheta1);
+
+	//if theta1 is too large and n1 > n2 no ray is refracted
+	if (n1 * sin(theta1) / n2 > 1) // theta1 is too large
+		return glm::vec3(0.f);
+
+	//theta2 is the angle between the negative normal and the refracted direction
+	float theta2 = glm::asin(n1 * glm::sin(theta1) / n2);
+
+	//rotate around incomingDir x surfaceNormal
+	//angle: PI - theta1 + theta2
+	glm::vec4 newDir = glm::rotate(glm::mat4(1.f), PI - theta1 + theta2, glm::cross(incomingDir, surfaceNormal)) * glm::vec4(incomingDir, 1);
+	
+	return glm::normalize(glm::vec3(-newDir.x, -newDir.y, -newDir.z));
 }

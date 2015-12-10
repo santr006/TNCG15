@@ -12,6 +12,7 @@ Plane3D::Plane3D(glm::vec3 pos, glm::vec3 rot, glm::vec2 dim, glm::vec3 col)
 	dimensions = dim;
 	color = col;
 	reflectionCoef = 1.f;
+	transparent = false;
 }
 
 Plane3D::Plane3D(glm::vec3 pos, glm::vec3 rot, glm::vec2 dim, glm::vec3 col, float reflecCoef)
@@ -21,6 +22,17 @@ Plane3D::Plane3D(glm::vec3 pos, glm::vec3 rot, glm::vec2 dim, glm::vec3 col, flo
 	dimensions = dim;
 	color = col;
 	reflectionCoef = reflecCoef;
+	transparent = false;
+}
+
+Plane3D::Plane3D(glm::vec3 pos, glm::vec3 rot, glm::vec2 dim, glm::vec3 col, bool trans)
+{
+	position = pos;
+	rotation = rot;
+	dimensions = dim;
+	color = col;
+	reflectionCoef = 1.f;
+	transparent = trans;
 }
 
 
@@ -160,4 +172,8 @@ Intersection* Plane3D::testRayIntersection(Ray r)
 
 	//std::cout << "not inside bounds" << std::endl;
 	return nullptr;
+}
+
+Intersection* Plane3D::testRayIntersectionInside(Ray r){
+	return new Intersection(glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f), 0.f, 0.f);
 }

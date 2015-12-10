@@ -29,7 +29,7 @@ Light::~Light()
 
 glm::vec3 Light::randomPointOnAreaLight()
 {
-	//translate the plane to it's local coordinate system rotate it and tranlate it beck
+	//translate the plane to it's local coordinate system rotate it and translate it beck
 	glm::mat4 translation = glm::translate(glm::mat4(1.f), -position);
 	glm::mat4 translationBack = glm::translate(glm::mat4(1.f), position);
 	glm::mat4 rotat = glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.f), -rotation.x, glm::vec3(1, 0, 0)), -rotation.y, glm::vec3(0, 1, 0)), -rotation.z, glm::vec3(0, 0, 1));
@@ -180,4 +180,8 @@ Intersection* Light::testRayIntersection(Ray r)
 		float distance = glm::length(position - r.startPosition);
 		return new Intersection(position, glm::vec3(0.f), color, 0, distance, true);
 	}
+}
+
+Intersection* Light::testRayIntersectionInside(Ray r){
+	return new Intersection(glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f), 0.f, 0.f);
 }

@@ -1,12 +1,13 @@
 #include "Box3D.h"
 
-Box3D::Box3D(glm::vec3 pos, glm::vec3 rot, glm::vec3 dim, glm::vec3 col, float reflecCoef)
+Box3D::Box3D(glm::vec3 pos, glm::vec3 rot, glm::vec3 dim, glm::vec3 col, float reflecCoef, bool trans)
 {
 	position = pos;
 	rotation = rot;
 	dimensions = dim;
 	color = col;
 	reflectionCoef = reflecCoef;
+	transparent = trans;
 
 	//calculate the positions of the planes after rotation
 	glm::mat4 translation = glm::translate(glm::mat4(1.f), -pos);
@@ -54,23 +55,42 @@ Intersection* Box3D::testRayIntersection(Ray r)
 
 	Intersection* current = back.testRayIntersection(r);
 	if (current != nullptr)
+	{
 		closest = current;
+		delete current;
+	}
 
 	current = right.testRayIntersection(r);
 	if (current != nullptr)
+	{
 		closest = current;
+		delete current;
+	}
 
 	current = left.testRayIntersection(r);
 	if (current != nullptr)
+	{
 		closest = current;
+		delete current;
+	}
 
 	current = top.testRayIntersection(r);
 	if (current != nullptr)
+	{
 		closest = current;
+		delete current;
+	}
 
 	current = bottom.testRayIntersection(r);
 	if (current != nullptr)
-		closest = current; 
+	{
+		closest = current;
+		delete current;
+	}
 	
 	return closest;
+}
+
+Intersection* Box3D::testRayIntersectionInside(Ray r){
+	return new Intersection(glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f), 0.f, 0.f);
 }

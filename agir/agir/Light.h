@@ -13,6 +13,7 @@ public:
 	~Light();
 
 	Intersection* testRayIntersection(Ray r);
+	Intersection* testRayIntersectionInside(Ray r);
 
 	glm::vec3 randomPointOnAreaLight();
 
