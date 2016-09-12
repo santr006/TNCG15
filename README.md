@@ -1,3 +1,3 @@
 # TNCG15
 
-Don't read me yet!
+This is a raytracer for lambertian reflectors and handles area light sources.
